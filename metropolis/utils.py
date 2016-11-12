@@ -19,9 +19,10 @@ def draw_polygons(drawer, polygons):
   h = drawer.im.size[1]
   for t in polygons:
     if t[2]:
-      drawer.polygon(map(lambda p: (p[0]+w/2,h/2-p[1]),t[0]),outline=t[1])
+      t[0] = t[0] + [t[0][0]]
+      drawer.line(map(lambda p: (p[0]+w/2,h/2-p[1]),t[0]),fill=t[1],width=4)
     else:
-      drawer.polygon(map(lambda p: (p[0]+w/2,h/2-p[1]),t[0]),fill=t[1])
+      drawer.polygon(map(lambda p: (p[0]+w/2,h/2-p[1]),t[0]), fill=t[1])
 
 def local_coord(M, points):
   inv = np.linalg.inv(M)
@@ -64,8 +65,6 @@ def draw_from_file(drawer, filename, fov):
       polygons.append([map(tuple, np.array(proj)),color,wireframe])
 
   
-
-
   draw_polygons(drawer, polygons)
 
 
@@ -80,5 +79,5 @@ fov = 200
 im = Image.new(mode,size,color)
 draw = ImageDraw.Draw(im)
 
-draw_from_file(draw,"polygons.txt", fov)
+draw_from_file(draw,"room.txt", fov)
 im.show()
