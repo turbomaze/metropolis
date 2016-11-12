@@ -129,10 +129,11 @@ class SquareProblem(object):
 
 
 class CubeProblem(object):
-    def __init__(self, root, dims, max_loc, radius):
+    def __init__(self, root, dims, mins, maxes, radius):
         self.root = root
         self.dims = dims
-        self.max_loc = max_loc
+        self.mins = mins
+        self.maxes = maxes
         self.radius = radius
 
     def render(self, img):
@@ -163,23 +164,20 @@ class CubeProblem(object):
         ])
         model = [
             [20, (0, 0, 0), '#000000', 1],
-            [7, (x[0], 0, x[1]), '#ff0000', 0]
+            [x[2], (x[0], 0, x[1]), '#ff0000', 0]
         ]
         draw_from_model(draw, camera, model, fov=200)
         return im
 
     def get_random_cube(self):
-        center = (
-            random.uniform(0, self.max_loc),
-            random.uniform(0, self.max_loc)
-        )
-        return center
+        return [random.uniform(self.mins[i], self.maxes[i]) for i in range (0,len(self.mins))]
 
     # G
     def get_next(self, x, k):
-        step = 5.
-        shift = random.uniform(-step, step)
-        if x[k] + shift < 0 or x[k] + shift > self.max_loc:
+        step = (self.maxes[k]-self.mins[k])/2
+        shift = random.uniform(-step,step)
+
+        if x[k] + shift < self.mins[k] or x[k] + shift > self.maxes[k]:
             return x
         else:
             x_list = list(x)
