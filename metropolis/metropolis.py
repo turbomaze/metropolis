@@ -161,17 +161,15 @@ class CubeProblem(object):
         return center
 
     # G
-    def get_next(self, x):
-        step = 1.4
-        shift = (
-            random.uniform(-step, step),
-            random.uniform(-step, step)
-        )
-        if x[0] + shift[0] < 0 or x[0] + shift[0] > self.max_loc:
-            shift = (0, shift[1])
-        if x[1] + shift[1] < 0 or x[1] + shift[1] > self.max_loc:
-            shift = (shift[0], 0)
-        return tuple(np.add(x, shift))
+    def get_next(self, x, k):
+        step = 4
+        shift = random.uniform(-step, step)
+        if x[k] + shift < 0 or x[k] + shift > self.max_loc:
+            return x
+        else:
+            x_list = list(x)
+            x_list[k] += shift
+            return tuple(x_list)
 
     def get_likelihood_func(self, answer):
         answer_img = self.get_image(answer)

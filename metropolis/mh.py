@@ -1,4 +1,5 @@
 import random
+import time
 
 
 class MH(object):
@@ -12,6 +13,7 @@ class MH(object):
         self.progress = progress
 
     def optimize(self, goal, x_0, trials):
+        start = time.clock()
         pi = self.pi_maker(goal)
 
         # Initialisation: pick an initial state x at random
@@ -24,7 +26,8 @@ class MH(object):
         post_max = post_x
         for i in range(trials):
             # randomly pick a state x' via G
-            xp = self.G(x)
+            k = random.randrange(len(x))
+            xp = self.G(x, k)
             self.progress(xp)
 
             # compute the prior probability of x'
@@ -46,4 +49,7 @@ class MH(object):
                 # accept
                 x, prior_x, post_x = xp, prior_xp, post_xp
 
+        end = time.clock()
+        duration = end - start
+        print str(trials) + ' trials in ' + str(duration) + 's'
         return x_max
