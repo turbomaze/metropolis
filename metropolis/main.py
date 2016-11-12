@@ -39,9 +39,10 @@ if __name__ == '__main__':
         mins=[0, 0, 5], maxes=[20, 20, 12],
         radius=20
     )
-    correct = [15., 15., 7]
-    correct_img = problem.get_image(correct)
-    correct_img.save('../data/correct.bmp')
+    # correct = [15., 15., 7]
+    # correct_img = problem.get_image(correct)
+    # correct_img.save('../data/correct.bmp')
+    correct_img = Image.open('../data/test2.bmp')
     metropolis = MH(
         problem.get_next,
         problem.get_likelihood_func,
@@ -54,7 +55,6 @@ if __name__ == '__main__':
     guess = metropolis.optimize(
         correct_img, first_guess, trials=200
     )
-    print 'Answer: ', correct
     print 'Guess: ', guess
 
     im = problem.get_image(guess)
