@@ -12,7 +12,7 @@ def get_box(size, loc):
   ]
 
   return [np.array(side) for side in sides]
-  
+
 
 def draw_polygons(drawer, polygons):
   w = drawer.im.size[0]
@@ -64,20 +64,38 @@ def draw_from_file(drawer, filename, fov):
       proj = get_local_proj(M,points,fov)
       polygons.append([map(tuple, np.array(proj)),color,wireframe])
 
-  
+
   draw_polygons(drawer, polygons)
 
+def draw_from_model(drawer, camera, model, fov):
+    M = np.concatenate(
+        (camera, np.array([[0, 0, 0, 1]]).T), axis=1
+    )
+
+    polygons = []
+    for box in model:
+        size = int(box[0])
+        loc = box[1]
+        color = box[2]
+        wireframe = int(box[3])
+
+        sides = get_box(size, loc)
+        for side in sides:
+            proj = get_local_proj(M, side, fov)
+            polygons.append([
+                map(tuple, np.array(proj)), color, wireframe
+            ])
+    draw_polygons(drawer, polygons)
 
 
-#MAIN
-#######################################33
-mode = "RGB"
-size = (512,512)
-color = "#ffffff"
-fov = 200
+if __name__ == '__main__':
+    mode = "RGB"
+    size = (512, 512)
+    color = "#ffffff"
+    fov = 200
 
-im = Image.new(mode,size,color)
-draw = ImageDraw.Draw(im)
+    im = Image.new(mode, size, color)
+    draw = ImageDraw.Draw(im)
 
-draw_from_file(draw,"room.txt", fov)
-im.show()
+    draw_from_file(draw, '../data/room.txt', fov)
+    im.show()
