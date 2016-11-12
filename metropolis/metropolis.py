@@ -129,9 +129,10 @@ class SquareProblem(object):
 
 
 class CubeProblem(object):
-    def __init__(self, root, dims, mins, maxes, radius):
+    def __init__(self, root, dims, numBoxes, mins, maxes, radius):
         self.root = root
         self.dims = dims
+        self.numBoxes = numBoxes
         self.mins = mins
         self.maxes = maxes
         self.radius = radius
@@ -156,10 +157,7 @@ class CubeProblem(object):
         self.root.update()
 
     def get_image(self, x):
-        model = [
-            [20, (0, 0, 0), '#000000', 1],
-            [x[2], (x[0], 0, x[1]), '#ff0000', 0]
-        ]
+        model = [[20, (0, 0, 0), '#000000', 1]] + [[x[3*i+2], (x[3*i], 0, x[3*i+1]), '#ff0000', 0] for i in range (0, self.numBoxes)]
         return self.get_image_helper(model)
 
     def get_image_helper(self, model):
@@ -222,7 +220,7 @@ class CubeProblem(object):
                     c_diff = np.subtract(ca, cb)
                     corner_error += np.linalg.norm(c_diff)**2
 
-            return 1./(0*corner_error**0.5 + diff)
+            return 1./(corner_error**0.5 + 0.1*diff)
 
         return get_likelihood
 

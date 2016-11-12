@@ -32,17 +32,18 @@ if __name__ == '__main__':
     dims = (400, 300)
     root = Tk()
     root.geometry(str(dims[0]) + 'x' + str(dims[1]))
+    correct_img = Image.open('../data/test4.bmp')
+    numBoxes = 2
 
     # domain specific
     problem = CubeProblem(
-        root, dims,
-        mins=[0, 0, 2], maxes=[16, 16, 12],
+        root, dims, numBoxes,
+        mins=[0, 0, 2]*numBoxes, maxes=[20, 12, 12]*numBoxes,
         radius=20
     )
     # correct = [15., 15., 7]
     # correct_img = problem.get_image(correct)
     # correct_img.save('../data/correct.bmp')
-    correct_img = Image.open('../data/test2.bmp')
     metropolis = MH(
         problem.get_next,
         problem.get_likelihood_func,
