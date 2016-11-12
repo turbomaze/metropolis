@@ -159,11 +159,12 @@ class CubeProblem(object):
     def get_image(self, x):
         model = [
             [20, (0, 0, 0), '#000000', 1]
-        ] + [
-            [
-                x[3*i+2], (x[3*i], 0, x[3*i+1]), '#ff0000', 0
-            ] for i in range (0, self.num_boxes)
-        ]
+        ] + [[
+            x[3*i+3],
+            (x[3*i], x[3*i+1], x[3*i+2]),
+            '#ff0000',
+            0
+        ] for i in range (0, self.num_boxes)]
         return self.get_image_helper(model)
 
     def get_image_helper(self, model):
@@ -187,7 +188,7 @@ class CubeProblem(object):
 
     # G
     def get_next(self, x, k, factor):
-        step = (self.maxes[k]-self.mins[k])/2
+        step = (self.maxes[k]-self.mins[k])/4.
         shift = factor * random.uniform(0, step)
 
         if x[k] + shift < self.mins[k] or x[k] + shift > self.maxes[k]:
@@ -198,11 +199,18 @@ class CubeProblem(object):
             return tuple(x_list)
 
     def get_likelihood_func(self, goal_img):
-        corners_a = get_corners(goal_img)
-        data_a = np.array(goal_img.getdata())
+        small_size = (400, 300)
+        small_goal_img = goal_img.resize(
+            small_size, Image.BILINEAR
+        )
+        small_goal_img.show()
+        corners_a = get_corners(small_goal_img)
+        data_a = np.array(small_goal_img.getdata())
 
         def get_likelihood(x):
-            b = self.get_image(x)
+            b = self.get_image(x).resize(
+                small_size, Image.BILINEAR
+            )
             corners_b = get_corners(b)
             data_b = np.array(b.getdata())
 

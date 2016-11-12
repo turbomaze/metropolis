@@ -27,38 +27,36 @@ def render_particles(rt, dimensions, particles):
     )
     rt.update()
 
-def metro_model(correct_img, numBoxes=1, dims=(400,300), mins=[0,0,2], maxes=[20, 12, 12]):
-    root = Tk()
-    root.geometry(str(dims[0]) + 'x' + str(dims[1]))
+numBoxes = 1
+dims = (400, 300)
+mins = [0, 0, 0, 2]
+maxes = [20, 8, 12, 12]
+root = Tk()
+root.geometry(str(dims[0]) + 'x' + str(dims[1]))
 
-    # domain specific
-    problem = CubeProblem(
-        root, dims, numBoxes,
-        mins*numBoxes, maxes*numBoxes,
-        radius=20
-    )
-    # correct = [15., 15., 7]
-    # correct_img = problem.get_image(correct)
-    # correct_img.save('../data/correct.bmp')
-    metropolis = MH(
-        problem.get_next,
-        problem.get_likelihood_func,
-        problem.get_prior_prob,
-        lambda x: problem.render(problem.get_image(x), x)
-    )
+# domain specific
+problem = CubeProblem(
+    root, dims, numBoxes,
+    mins*numBoxes, maxes*numBoxes,
+    radius=20
+)
+correct = [15., 0., 10., 7]
+correct_img = problem.get_image(correct)
+correct_img.save('../data/correct.bmp')
+metropolis = MH(
+    problem.get_next,
+    problem.get_likelihood_func,
+    problem.get_prior_prob,
+    lambda x: problem.render(problem.get_image(x), x)
+)
 
-    # execution
-    first_guess = problem.get_random_cube()
-    guess = metropolis.optimize(
-        correct_img, first_guess, trials=200
-    )
+# execution
+first_guess = problem.get_random_cube()
+guess = metropolis.optimize(
+    correct_img, first_guess, trials=200
+)
 
-    im = problem.get_image(guess)
-    im.save('../data/guess.bmp')
+im = problem.get_image(guess)
+im.save('../data/guess.bmp')
 
-    return guess
-
-print metro_model(Image.open("../data/test3.bmp"))
-
-
-
+print guess
