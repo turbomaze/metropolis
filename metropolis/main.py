@@ -35,19 +35,12 @@ if __name__ == '__main__':
 
     # domain specific
     problem = CubeProblem(
-        root, dims, mins=[0,0,3], maxes=[20,20,7], radius=20
+        root, dims,
+        mins=[0, 0], maxes=[20, 20],
+        radius=20
     )
-    correct = [15., 5., 7]
-
-    # swarm = PSO(
-    #     [[0, 20], [0, 20]],
-    #     problem.get_likelihood_func
-    # )
-    # swarm.optimize(
-    #     10, 20, correct,
-    #     lambda x: render_particles(root, dims, x)
-    # )
-
+    # correct = [15., 5., 7.]
+    correct = [15., 5.]
     metropolis = MH(
         problem.get_next,
         problem.get_likelihood_func,
@@ -57,6 +50,6 @@ if __name__ == '__main__':
 
     # execution
     first_guess = problem.get_random_cube()
-    guess = metropolis.optimize(correct, first_guess, trials=200)
+    guess = metropolis.optimize(correct, first_guess, trials=100)
     print 'Answer: ', correct
     print 'Guess: ', guess

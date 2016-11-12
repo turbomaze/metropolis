@@ -28,7 +28,10 @@ class MH(object):
         for i in range(trials):
             # randomly pick a state x' via G
             k = random.randrange(len(x))
-            xp = self.G(x, k)
+            xpp = self.G(x, k, 0.03)
+            post_xpp = pi(xpp)
+            factor = 0.1 if post_xpp > post_x else -0.1
+            xp = self.G(x, k, factor)
 
             # compute the prior probability of x'
             prior_xp = self.q(xp)

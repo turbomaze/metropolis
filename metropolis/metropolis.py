@@ -164,18 +164,22 @@ class CubeProblem(object):
         ])
         model = [
             [20, (0, 0, 0), '#000000', 1],
-            [x[2], (x[0], 0, x[1]), '#ff0000', 0]
+            [7, (x[0], 0, x[1]), '#ff0000', 0]
         ]
         draw_from_model(draw, camera, model, fov=200)
         return im
 
     def get_random_cube(self):
-        return [random.uniform(self.mins[i], self.maxes[i]) for i in range (0,len(self.mins))]
+        return [
+            random.uniform(
+                self.mins[i], self.maxes[i]
+            ) for i in range(0, len(self.mins))
+        ]
 
     # G
-    def get_next(self, x, k):
+    def get_next(self, x, k, factor):
         step = (self.maxes[k]-self.mins[k])/4
-        shift = random.uniform(-step,step)
+        shift = factor * random.uniform(0, step)
 
         if x[k] + shift < self.mins[k] or x[k] + shift > self.maxes[k]:
             return x
