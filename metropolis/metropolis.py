@@ -164,7 +164,7 @@ class CubeProblem(object):
             (x[3*i], x[3*i+1], x[3*i+2]),
             '#ff0000',
             0
-        ] for i in range (0, self.num_boxes)]
+        ] for i in range(0, self.num_boxes)]
         return self.get_image_helper(model)
 
     def get_image_helper(self, model):

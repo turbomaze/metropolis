@@ -23,8 +23,8 @@ def infer():
         img = img.convert('RGB')
         problem = CubeProblem(
             None, (400, 300), num_boxes,
-            mins=[0, 0, 2]*num_boxes,
-            maxes=[20, 15, 10]*num_boxes,
+            mins=[0, 0, 0, 2]*num_boxes,
+            maxes=[20, 8, 15, 10]*num_boxes,
             radius=20
         )
         black = MH(
@@ -41,11 +41,11 @@ def infer():
             {
                 "shape": "cube",
                 "x": guess[3*i],
-                "y": 0,
-                "z": guess[3*i+1],
-                "l": guess[3*i+2],
-                "h": guess[3*i+2],
-                "w": guess[3*i+2],
+                "y": guess[3*i+1],
+                "z": guess[3*i+2],
+                "l": guess[3*i+3],
+                "h": guess[3*i+3],
+                "w": guess[3*i+3],
                 "xRot": 0,
                 "yRot": 0,
                 "zRot": 0,
