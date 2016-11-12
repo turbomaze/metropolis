@@ -35,8 +35,8 @@ class MH(object):
 
             # render x' into I_r' to compute pi(x')
             post_xp = pi(xp)
+            self.progress(xp)
             if post_xp > post_max:
-                self.progress(xp)
                 x_max = xp
                 post_max = post_xp
 
