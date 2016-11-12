@@ -136,10 +136,12 @@ class CubeProblem(object):
         self.maxes = maxes
         self.radius = radius
 
-    def render(self, img):
+    def render(self, x):
+        img = self.get_image(x)
+        bare_img = self.get_bare_image(x)
         draw = ImageDraw.Draw(img)
         w = 3
-        for c in get_corners(img):
+        for c in get_corners(bare_img):
             draw.rectangle(
                 [c[0]-w, c[1]-w, c[0]+w, c[1]+w],
                 fill=(0, 255, 0)
@@ -153,7 +155,7 @@ class CubeProblem(object):
         )
         self.root.update()
 
-    def get_image(self, x):
+    def get_image_helper(self, model):
         im = Image.new('RGB', self.dims, '#ffffff')
         draw = ImageDraw.Draw(im)
         camera = np.matrix([
@@ -162,12 +164,23 @@ class CubeProblem(object):
             [0, 0, 1],
             [15, 10, 30]
         ])
-        model = [
-            [20, (0, 0, 0), '#000000', 1],
-            [7, (x[0], 0, x[1]), '#ff0000', 0]
-        ]
         draw_from_model(draw, camera, model, fov=200)
         return im
+
+    def get_image(self, x):
+        model = [
+            [20, (0, 0, 0), '#000000', 1],
+            [7, (x[0], 0, x[1]), '#ff0000', 0],
+            [7, (x[2], 0, x[3]), '#ff0000', 0]
+        ]
+        return self.get_image_helper(model)
+
+    def get_bare_image(self, x):
+        model = [
+            [7, (x[0], 0, x[1]), '#ff0000', 0],
+            [7, (x[2], 0, x[3]), '#ff0000', 0]
+        ]
+        return self.get_image_helper(model)
 
     def get_random_cube(self):
         return [
@@ -189,12 +202,12 @@ class CubeProblem(object):
             return tuple(x_list)
 
     def get_likelihood_func(self, answer):
-        answer_img = self.get_image(answer)
+        answer_img = self.get_bare_image(answer)
         corners_a = get_corners(answer_img)
         data_a = np.array(answer_img.getdata())
 
         def get_likelihood(x):
-            b = self.get_image(x)
+            b = self.get_bare_image(x)
             corners_b = get_corners(b)
             data_b = np.array(b.getdata())
 

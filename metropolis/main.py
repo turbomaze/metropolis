@@ -36,16 +36,15 @@ if __name__ == '__main__':
     # domain specific
     problem = CubeProblem(
         root, dims,
-        mins=[0, 0], maxes=[20, 20],
+        mins=[0, 0, 0, 0], maxes=[20, 20, 20, 20],
         radius=20
     )
-    # correct = [15., 5., 7.]
-    correct = [15., 5.]
+    correct = [15., 5., 5, 2]
     metropolis = MH(
         problem.get_next,
         problem.get_likelihood_func,
         problem.get_prior_prob,
-        lambda x: problem.render(problem.get_image(x))
+        lambda x: problem.render(x)
     )
 
     # execution
