@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageTk
 def get_corners(img):
     gray = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2GRAY)
     gray = np.float32(gray)
-    corners = cv2.goodFeaturesToTrack(gray, 100, 0.01, 10)
+    corners = cv2.goodFeaturesToTrack(gray, 50, 0.01, 10)
     return [c[0] for c in np.int0(corners)]
 
 
@@ -174,7 +174,7 @@ class CubeProblem(object):
 
     # G
     def get_next(self, x, k):
-        step = (self.maxes[k]-self.mins[k])/2
+        step = (self.maxes[k]-self.mins[k])/4
         shift = random.uniform(-step,step)
 
         if x[k] + shift < self.mins[k] or x[k] + shift > self.maxes[k]:
@@ -187,15 +187,22 @@ class CubeProblem(object):
     def get_likelihood_func(self, answer):
         answer_img = self.get_image(answer)
         corners_a = get_corners(answer_img)
-        data_a = np.array(answer_img.getdata())[:, 0]
+        data_a = np.array(answer_img.getdata())
 
         def get_likelihood(x):
             b = self.get_image(x)
             corners_b = get_corners(b)
-            data_b = np.array(b.getdata())[:, 0]
+            data_b = np.array(b.getdata())
 
             # direct error
-            diff = np.linalg.norm(np.subtract(data_a, data_b))
+            a_sub_b = np.subtract(data_a, data_b)
+            diff = np.linalg.norm(
+                a_sub_b[:, 0]
+            ) + np.linalg.norm(
+                a_sub_b[:, 1]
+            ) + np.linalg.norm(
+                a_sub_b[:, 2]
+            )
 
             # compare corner error
             max_err = self.dims[0]**2 + self.dims[1]**2
