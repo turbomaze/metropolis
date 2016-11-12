@@ -38,7 +38,7 @@ def get_local_proj(M,points,fov):
 
 def draw_from_file(drawer, filename, fov):
   f = open(filename).readlines()
-  camera = np.matrix([map(int, t[1:-1].split(",")) for t in f[0].strip().split(" ")])
+  camera = np.matrix([map(float, t[1:-1].split(",")) for t in f[0].strip().split(" ")])
   M = np.concatenate((camera, np.array([[0,0,0,1]]).T), axis=1)
 
   polygons = []
@@ -46,8 +46,8 @@ def draw_from_file(drawer, filename, fov):
     arr = line.strip().split(" ")
 
     if arr[0] == "box":
-      size = int(arr[1])
-      loc = map(int,arr[2][1:-1].split(","))
+      size = float(arr[1])
+      loc = map(float,arr[2][1:-1].split(","))
       color = arr[3]
       wireframe = int(arr[4])
 
@@ -57,9 +57,9 @@ def draw_from_file(drawer, filename, fov):
         polygons.append([map(tuple, np.array(proj)),color,wireframe])
 
     else:
-      points = np.array([map(int, t[1:-1].split(",")) for t in arr[0:3]])
+      points = np.array([map(float, t[1:-1].split(",")) for t in arr[0:3]])
       color = arr[3]
-      wireframe = int(arr[4])
+      wireframe = float(arr[4])
 
       proj = get_local_proj(M,points,fov)
       polygons.append([map(tuple, np.array(proj)),color,wireframe])
@@ -74,10 +74,10 @@ def draw_from_model(drawer, camera, model, fov):
 
     polygons = []
     for box in model:
-        size = int(box[0])
+        size = float(box[0])
         loc = box[1]
         color = box[2]
-        wireframe = int(box[3])
+        wireframe = float(box[3])
 
         sides = get_box(size, loc)
         for side in sides:

@@ -118,3 +118,82 @@ class SquareProblem(object):
 
     def get_prior_prob(self, x):
         return 1.
+
+
+class CubeProblem(object):
+    def __init__(self, root, dims, max_loc, radius):
+        self.root = root
+        self.dims = dims
+        self.max_loc = max_loc
+        self.radius = radius
+
+    def render(self, img):
+        tk_img = ImageTk.PhotoImage(img)
+        label_image = Label(self.root, image=tk_img)
+        label_image.place(
+            x=0, y=0,
+            width=img.size[0],
+            height=img.size[1]
+        )
+        self.root.update()
+
+    def get_image(self, x):
+        im = Image.new('RGB', self.dims, '#ffffff')
+        draw = ImageDraw.Draw(im)
+        camera = np.matrix([
+            [1, 0, 0],
+            [0, 1, 0],
+            [0, 0, 1],
+            [15, 10, 30]
+        ])
+        model = [
+            [20, (0, 0, 0), '#000000', 1],
+            [7, (x[0], 0, x[1]), '#ff0000', 0]
+        ]
+        draw_from_model(draw, camera, model, fov=200)
+        return im
+
+    def get_random_cube(self):
+        center = (
+            random.randrange(self.max_loc),
+            random.randrange(self.max_loc)
+        )
+        return center
+
+    # G
+    def get_next(self, x):
+        step = 1.4
+        shift = (
+            random.uniform(-step, step),
+            random.uniform(-step, step)
+        )
+        if x[0] + shift[0] < 0 or x[0] + shift[0] > self.max_loc:
+            shift = (0, shift[1])
+        if x[1] + shift[1] < 0 or x[1] + shift[1] > self.max_loc:
+            shift = (shift[0], 0)
+        return tuple(np.add(x, shift))
+
+    def get_likelihood_func(self, answer):
+        answer_img = self.get_image(answer)
+        blurred_a = answer_img.filter(
+            ImageFilter.GaussianBlur(radius=self.radius)
+        )
+        blurred_data_a = np.array(blurred_a.getdata())[:, 0]
+        data_a = np.array(answer_img.getdata())[:, 0]
+
+        def get_likelihood(x):
+            b = self.get_image(x)
+            blurred_b = b.filter(
+                ImageFilter.GaussianBlur(radius=self.radius)
+            )
+            blurred_data_b = np.array(blurred_b.getdata())[:, 0]
+            data_b = np.array(b.getdata())[:, 0]
+
+            blurred_diff = np.subtract(blurred_data_a, blurred_data_b)
+            diff = np.subtract(data_a, data_b)
+            return 1./(np.linalg.norm(blurred_diff) + np.linalg.norm(diff))
+
+        return get_likelihood
+
+    def get_prior_prob(self, x):
+        return 1.
