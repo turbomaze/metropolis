@@ -171,23 +171,22 @@ class CubeProblem(object):
     def get_image(self, x):
         model = [
             [20, (0, 0, 0), '#000000', 1],
-            [7, (x[0], 0, x[1]), '#ff0000', 0],
-            [7, (x[2], 0, x[3]), '#ff0000', 0]
+            [x[2], (x[0], 0, x[1]), '#ff0000', 0]
+            # [7, (x[2], 0, x[3]), '#ff0000', 0]
         ]
         return self.get_image_helper(model)
 
     def get_bare_image(self, x):
         model = [
-            [7, (x[0], 0, x[1]), '#ff0000', 0],
-            [7, (x[2], 0, x[3]), '#ff0000', 0]
+            [x[2], (x[0], 0, x[1]), '#ff0000', 0]
+            # [7, (x[2], 0, x[3]), '#ff0000', 0]
         ]
         return self.get_image_helper(model)
 
     def get_random_cube(self):
         return [
-            random.uniform(
-                self.mins[i], self.maxes[i]
-            ) for i in range(0, len(self.mins))
+                (self.mins[i] + self.maxes[i])/2
+                for i in range(0, len(self.mins))
         ]
 
     # G
@@ -203,7 +202,7 @@ class CubeProblem(object):
             return tuple(x_list)
 
     def get_likelihood_func(self, answer):
-        answer_img = self.get_bare_image(answer)
+        answer_img = Image.open("../data/test1.bmp")
         corners_a = get_corners(answer_img)
         data_a = np.array(answer_img.getdata())
 
