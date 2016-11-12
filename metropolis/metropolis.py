@@ -129,10 +129,10 @@ class SquareProblem(object):
 
 
 class CubeProblem(object):
-    def __init__(self, root, dims, numBoxes, mins, maxes, radius):
+    def __init__(self, root, dims, num_boxes, mins, maxes, radius):
         self.root = root
         self.dims = dims
-        self.numBoxes = numBoxes
+        self.num_boxes = num_boxes
         self.mins = mins
         self.maxes = maxes
         self.radius = radius
@@ -157,7 +157,13 @@ class CubeProblem(object):
         self.root.update()
 
     def get_image(self, x):
-        model = [[20, (0, 0, 0), '#000000', 1]] + [[x[3*i+2], (x[3*i], 0, x[3*i+1]), '#ff0000', 0] for i in range (0, self.numBoxes)]
+        model = [
+            [20, (0, 0, 0), '#000000', 1]
+        ] + [
+            [
+                x[3*i+2], (x[3*i], 0, x[3*i+1]), '#ff0000', 0
+            ] for i in range (0, self.num_boxes)
+        ]
         return self.get_image_helper(model)
 
     def get_image_helper(self, model):

@@ -1,7 +1,6 @@
 from flask import Flask, redirect, request, jsonify
 from PIL import Image
 from io import BytesIO
-import numpy as np
 import base64
 from metropolis.metropolis import CubeProblem
 from metropolis.mh import MH
@@ -20,9 +19,9 @@ def infer():
     else:
         base64_img = request.form['img']
         img = Image.open(BytesIO(base64.b64decode(base64_img)))
-        r, g, b, a = img.split()
+        img = img.convert('RGB')
         problem = CubeProblem(
-            None, (400, 300), 1,
+            None, (400, 300), num_boxes=1,
             mins=[0, 0, 2], maxes=[20, 15, 10],
             radius=20
         )
@@ -34,7 +33,7 @@ def infer():
         )
         first_guess = problem.get_random_cube()
         guess = black.optimize(
-            img, first_guess, trials=200
+            img, first_guess, trials=100
         )
 
         obj = [{
