@@ -176,13 +176,14 @@ class CubeProblem(object):
 
     def get_random_cube(self):
         return [
-                (self.mins[i] + self.maxes[i])/2
+                random.uniform(self.mins[i],self.maxes[i])
                 for i in range(0, len(self.mins))
         ]
 
+
     # G
     def get_next(self, x, k, factor):
-        step = (self.maxes[k]-self.mins[k])/4
+        step = (self.maxes[k]-self.mins[k])/2
         shift = factor * random.uniform(0, step)
 
         if x[k] + shift < self.mins[k] or x[k] + shift > self.maxes[k]:

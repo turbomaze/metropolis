@@ -36,7 +36,7 @@ if __name__ == '__main__':
     # domain specific
     problem = CubeProblem(
         root, dims,
-        mins=[0, 0, 5], maxes=[20, 20, 12],
+        mins=[0, 0, 2], maxes=[16, 16, 12],
         radius=20
     )
     # correct = [15., 15., 7]
