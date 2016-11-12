@@ -30,7 +30,7 @@ class MH(object):
             k = random.randrange(len(x))
             xpp = self.G(x, k, 0.03)
             post_xpp = pi(xpp)
-            factor = 0.1 if post_xpp > post_x else -0.1
+            factor = 1 if post_xpp > post_x else -1
             xp = self.G(x, k, factor)
 
             # compute the prior probability of x'
@@ -38,8 +38,8 @@ class MH(object):
 
             # render x' into I_r' to compute pi(x')
             post_xp = pi(xp)
-            self.progress(xp)
             if post_xp > post_max:
+                self.progress(xp)
                 x_max = xp
                 post_max = post_xp
 

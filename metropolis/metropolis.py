@@ -136,7 +136,7 @@ class CubeProblem(object):
         self.maxes = maxes
         self.radius = radius
 
-    def render(self, img):
+    def render(self, img,x):
         draw = ImageDraw.Draw(img)
         w = 3
         for c in get_corners(img):
@@ -144,6 +144,7 @@ class CubeProblem(object):
                 [c[0]-w, c[1]-w, c[0]+w, c[1]+w],
                 fill=(0, 255, 0)
             )
+        draw.text((30,10), str([round(c,3) for c in x]), fill="#000000")
         tk_img = ImageTk.PhotoImage(img)
         label_image = Label(self.root, image=tk_img)
         label_image.place(
@@ -164,7 +165,7 @@ class CubeProblem(object):
         ])
         model = [
             [20, (0, 0, 0), '#000000', 1],
-            [7, (x[0], 0, x[1]), '#ff0000', 0]
+            [7, (0,x[0], x[1]), '#ff0000', 0],
         ]
         draw_from_model(draw, camera, model, fov=200)
         return im
@@ -218,7 +219,7 @@ class CubeProblem(object):
                     c_diff = np.subtract(ca, cb)
                     corner_error += np.linalg.norm(c_diff)**2
 
-            return 1./(corner_error**0.5 + diff)
+            return 1./(0*corner_error**0.5 + diff)
 
         return get_likelihood
 
