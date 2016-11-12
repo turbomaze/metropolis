@@ -1,42 +1,8 @@
-from Tkinter import *
 import random
 import numpy as np
+from mh import MH
+from Tkinter import Tk, Label
 from PIL import Image, ImageDraw, ImageFilter, ImageTk
-
-dims = (400, 300)
-
-center_ans = (100, 150)
-default_side = 50
-default_color = (0, 0, 0)
-
-blur_radius = 20
-twitch_param = 80
-num_trials = 50
-
-root = Tk()
-root.geometry(str(dims[0]) + 'x' + str(dims[1]))
-
-
-def uncover_structure(img, trials,):
-    guess = get_random_square()
-    guess_img = get_image(guess)
-    f_x = get_similarity(img, guess_img)
-    for i in range(trials):
-        step = int(twitch_param * min(1, (60. - i)/50.))
-        print 'Round ' + str(i), step
-
-        update = twitch(guess, step)
-        update_img = get_image(update)
-        f_xp = get_similarity(img, update_img)
-        if f_xp <= f_x:
-            print f_xp
-            f_x = f_xp
-            guess = update
-            render(update_img)
-    return (
-        (guess['points'][0][0]+guess['points'][1][0])/2.,
-        (guess['points'][0][1]+guess['points'][2][1])/2.
-    )
 
 
 def render(img):
@@ -52,50 +18,6 @@ def render(img):
         height=img.size[1]
     )
     root.update()
-
-
-def twitch(square, step):
-    shift = (
-        random.randrange(-step, step),
-        random.randrange(-step, step)
-    )
-
-    x_left_shift = square['points'][0][0] + shift[0]
-    x_right_shift = square['points'][2][0] + shift[0]
-    y_top_shift = square['points'][0][1] + shift[1]
-    y_bot_shift = square['points'][2][1] + shift[1]
-
-    if x_left_shift < 0 or x_right_shift > dims[0]:
-        shift = (0, shift[1])
-    if y_top_shift < 0 or y_bot_shift > dims[1]:
-        shift = (shift[0], 0)
-
-    return {
-        'points': [
-            tuple(np.add(square['points'][0], shift)),
-            tuple(np.add(square['points'][1], shift)),
-            tuple(np.add(square['points'][2], shift)),
-            tuple(np.add(square['points'][3], shift)),
-        ],
-        'color': square['color']
-    }
-
-
-def get_similarity(a, b):
-    blurred_a = a.filter(
-        ImageFilter.GaussianBlur(radius=blur_radius)
-    )
-    blurred_b = b.filter(
-        ImageFilter.GaussianBlur(radius=blur_radius)
-    )
-    blurred_data_a = np.array(blurred_a.getdata())[:, 0]
-    blurred_data_b = np.array(blurred_b.getdata())[:, 0]
-    data_a = np.array(a.getdata())[:, 0]
-    data_b = np.array(b.getdata())[:, 0]
-
-    blurred_diff = np.subtract(blurred_data_a, blurred_data_b)
-    diff = np.subtract(data_a, data_b)
-    return np.linalg.norm(blurred_diff) + np.linalg.norm(diff)
 
 
 def get_image(polygon):
@@ -136,8 +58,82 @@ def get_square(center, side, color):
         'color': color
     }
 
+
+# G
+def get_next(x):
+    step = 80
+    shift = (
+        random.randrange(-step, step),
+        random.randrange(-step, step)
+    )
+
+    x_left_shift = x['points'][0][0] + shift[0]
+    x_right_shift = x['points'][2][0] + shift[0]
+    y_top_shift = x['points'][0][1] + shift[1]
+    y_bot_shift = x['points'][2][1] + shift[1]
+
+    if x_left_shift < 0 or x_right_shift > dims[0]:
+        shift = (0, shift[1])
+    if y_top_shift < 0 or y_bot_shift > dims[1]:
+        shift = (shift[0], 0)
+
+    return {
+        'points': [
+            tuple(np.add(x['points'][0], shift)),
+            tuple(np.add(x['points'][1], shift)),
+            tuple(np.add(x['points'][2], shift)),
+            tuple(np.add(x['points'][3], shift)),
+        ],
+        'color': x['color']
+    }
+
+
+def get_likelihood_func(answer):
+    answer_img = get_image(answer)
+    blurred_a = answer_img.filter(
+        ImageFilter.GaussianBlur(radius=blur_radius)
+    )
+    blurred_data_a = np.array(blurred_a.getdata())[:, 0]
+    data_a = np.array(answer_img.getdata())[:, 0]
+
+    def get_likelihood(x):
+        b = get_image(x)
+        blurred_b = b.filter(
+            ImageFilter.GaussianBlur(radius=blur_radius)
+        )
+        blurred_data_b = np.array(blurred_b.getdata())[:, 0]
+        data_b = np.array(b.getdata())[:, 0]
+
+        blurred_diff = np.subtract(blurred_data_a, blurred_data_b)
+        diff = np.subtract(data_a, data_b)
+        return 1./(np.linalg.norm(blurred_diff) + np.linalg.norm(diff))
+
+    return get_likelihood
+
+
+def get_prior_prob(x):
+    return 1.
+
+default_side = 50
+default_color = (0, 0, 0)
+
+blur_radius = 20
+twitch_param = 80
+num_trials = 50
+
+dims = (400, 300)
+root = Tk()
+root.geometry(str(dims[0]) + 'x' + str(dims[1]))
+
+center_ans = (100, 150)
 correct = get_square(center_ans, default_side, default_color)
-correct_img = get_image(correct)
-guess = uncover_structure(correct_img, num_trials)
-print 'Answer: ', center_ans
+metropolis = MH(
+    get_next,
+    get_likelihood_func,
+    get_prior_prob,
+    lambda x: render(get_image(x))
+)
+first_guess = get_random_square()
+guess = metropolis.optimize(correct, first_guess, 100)
+print 'Answer: ', correct
 print 'Guess: ', guess
