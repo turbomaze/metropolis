@@ -58,7 +58,7 @@ def metro_model(correct_img, numBoxes=1, dims=(400,300), mins=[0,0,2], maxes=[20
 
     return guess
 
-print metroModel(Image.open("../data/test3.bmp"))
+print metro_model(Image.open("../data/test3.bmp"))
 
 
 

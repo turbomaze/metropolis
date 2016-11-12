@@ -22,8 +22,8 @@ def infer():
         img = Image.open(BytesIO(base64.b64decode(base64_img)))
         r, g, b, a = img.split()
         problem = CubeProblem(
-            None, (400, 300),
-            mins=[0, 0, 5], maxes=[20, 20, 12],
+            None, (400, 300), 1,
+            mins=[0, 0, 2], maxes=[20, 15, 10],
             radius=20
         )
         black = MH(
@@ -36,7 +36,23 @@ def infer():
         guess = black.optimize(
             img, first_guess, trials=200
         )
-        return jsonify(params=guess)
+
+        obj = [{
+         "shape":"cube",
+         "x":guess[0],
+         "y":0,
+         "z":guess[1],
+         "l":guess[2],
+         "h":guess[2],
+         "w":guess[2],
+         "xRot":0,
+         "yRot":0,
+         "zRot":0,
+         "r":1.0,
+         "g":0.0,
+         "b":0.0
+        }]
+        return jsonify(obj)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=80)

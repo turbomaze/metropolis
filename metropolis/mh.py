@@ -54,7 +54,7 @@ class MH(object):
             # set A(x'|x)=pi(I_r')/pi(I_r) * q(x')/q(x)
             acceptance = prior_xp/prior_x
             acceptance *= post_xp/post_x
-            print i, post_max, acceptance
+            # print i, post_max, acceptance
 
             # accept the state according to A(x'|x).
             if random.random() < acceptance:
