@@ -28,6 +28,9 @@ class MH(object):
         x_max = x
         post_max = post_x
         for i in range(trials):
+            if i % 5 == 0:
+                print i, post_max, map(lambda x: round(x, 1), x_max)
+
             # randomly pick a state x' via G
             k = i % len(x)
 
