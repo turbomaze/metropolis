@@ -27,18 +27,14 @@ def render_particles(rt, dimensions, particles):
     )
     rt.update()
 
-if __name__ == '__main__':
-    # gui
-    dims = (400, 300)
+def metro_model(correct_img, numBoxes=1, dims=(400,300), mins=[0,0,2], maxes=[20, 12, 12]):
     root = Tk()
     root.geometry(str(dims[0]) + 'x' + str(dims[1]))
-    correct_img = Image.open('../data/test4.bmp')
-    numBoxes = 2
 
     # domain specific
     problem = CubeProblem(
         root, dims, numBoxes,
-        mins=[0, 0, 2]*numBoxes, maxes=[20, 12, 12]*numBoxes,
+        mins*numBoxes, maxes*numBoxes,
         radius=20
     )
     # correct = [15., 15., 7]
@@ -56,7 +52,13 @@ if __name__ == '__main__':
     guess = metropolis.optimize(
         correct_img, first_guess, trials=200
     )
-    print 'Guess: ', guess
 
     im = problem.get_image(guess)
     im.save('../data/guess.bmp')
+
+    return guess
+
+print metroModel(Image.open("../data/test3.bmp"))
+
+
+
