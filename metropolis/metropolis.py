@@ -170,8 +170,8 @@ class CubeProblem(object):
 
     def get_random_cube(self):
         center = (
-            random.randrange(self.max_loc),
-            random.randrange(self.max_loc)
+            random.uniform(0, self.max_loc),
+            random.uniform(0, self.max_loc)
         )
         return center
 
