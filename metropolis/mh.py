@@ -27,10 +27,10 @@ class MH(object):
         post_max = post_x
         for i in range(trials):
             # randomly pick a state x' via G
-            k = random.randrange(len(x))
+            k = i % len(x)
             xpp = self.G(x, k, 0.03)
             post_xpp = pi(xpp)
-            factor = 1 if post_xpp > post_x else -1
+            factor = 1. if post_xpp > post_x else -1.
             xp = self.G(x, k, factor)
 
             # compute the prior probability of x'
@@ -42,6 +42,7 @@ class MH(object):
                 self.progress(xp)
                 x_max = xp
                 post_max = post_xp
+                self.progress(xp)
 
             # set A(x'|x)=pi(I_r')/pi(I_r) * q(x')/q(x)
             acceptance = prior_xp/prior_x
