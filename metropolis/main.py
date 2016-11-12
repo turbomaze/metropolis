@@ -40,22 +40,20 @@ if __name__ == '__main__':
         radius=20
     )
     correct = [15., 15., 7]
-    im = problem.get_image(correct)
-    im.save('../data/correct.bmp')
-
-
+    correct_img = problem.get_image(correct)
+    correct_img.save('../data/correct.bmp')
     metropolis = MH(
         problem.get_next,
         problem.get_likelihood_func,
         problem.get_prior_prob,
-        lambda x: problem.render(problem.get_image(x),x)
+        lambda x: problem.render(problem.get_image(x), x)
     )
-
-
 
     # execution
     first_guess = problem.get_random_cube()
-    guess = metropolis.optimize(correct, first_guess, trials=200)
+    guess = metropolis.optimize(
+        correct_img, first_guess, trials=200
+    )
     print 'Answer: ', correct
     print 'Guess: ', guess
 

@@ -1,3 +1,4 @@
+import numpy as np
 import random
 import time
 
@@ -12,9 +13,9 @@ class MH(object):
         self.q = q
         self.progress = progress
 
-    def optimize(self, goal, x_0, trials):
+    def optimize(self, goal_img, x_0, trials):
         start = time.clock()
-        pi = self.pi_maker(goal)
+        pi = self.pi_maker(goal_img)
 
         # Initialisation: pick an initial state x at random
         x = x_0
@@ -30,7 +31,7 @@ class MH(object):
             k = i % len(x)
             xpp = self.G(x, k, 0.03)
             post_xpp = pi(xpp)
-            factor = 1. if post_xpp > post_x else -1.
+            factor = min(1, 1e9 * (post_xpp - post_x))
             xp = self.G(x, k, factor)
 
             # compute the prior probability of x'

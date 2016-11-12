@@ -138,10 +138,9 @@ class CubeProblem(object):
 
     def render(self, img, x):
         img = self.get_image(x)
-        bare_img = self.get_bare_image(x)
         draw = ImageDraw.Draw(img)
         w = 3
-        for c in get_corners(bare_img):
+        for c in get_corners(img):
             draw.rectangle(
                 [c[0]-w, c[1]-w, c[0]+w, c[1]+w],
                 fill=(0, 255, 0)
@@ -156,6 +155,13 @@ class CubeProblem(object):
         )
         self.root.update()
 
+    def get_image(self, x):
+        model = [
+            [20, (0, 0, 0), '#000000', 1],
+            [x[2], (x[0], 0, x[1]), '#ff0000', 0]
+        ]
+        return self.get_image_helper(model)
+
     def get_image_helper(self, model):
         im = Image.new('RGB', self.dims, '#ffffff')
         draw = ImageDraw.Draw(im)
@@ -167,21 +173,6 @@ class CubeProblem(object):
         ])
         draw_from_model(draw, camera, model, fov=200)
         return im
-
-    def get_image(self, x):
-        model = [
-            [20, (0, 0, 0), '#000000', 1],
-            [x[2], (x[0], 0, x[1]), '#ff0000', 0]
-            # [7, (x[2], 0, x[3]), '#ff0000', 0]
-        ]
-        return self.get_image_helper(model)
-
-    def get_bare_image(self, x):
-        model = [
-            [x[2], (x[0], 0, x[1]), '#ff0000', 0]
-            # [7, (x[2], 0, x[3]), '#ff0000', 0]
-        ]
-        return self.get_image_helper(model)
 
     def get_random_cube(self):
         return [
@@ -201,13 +192,12 @@ class CubeProblem(object):
             x_list[k] += shift
             return tuple(x_list)
 
-    def get_likelihood_func(self, answer):
-        answer_img = Image.open("../data/test1.bmp")
-        corners_a = get_corners(answer_img)
-        data_a = np.array(answer_img.getdata())
+    def get_likelihood_func(self, goal_img):
+        corners_a = get_corners(goal_img)
+        data_a = np.array(goal_img.getdata())
 
         def get_likelihood(x):
-            b = self.get_bare_image(x)
+            b = self.get_image(x)
             corners_b = get_corners(b)
             data_b = np.array(b.getdata())
 
