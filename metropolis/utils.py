@@ -1,5 +1,6 @@
-from PIL import Image,ImageDraw
+import cv2
 import numpy as np
+from PIL import Image, ImageDraw
 
 def get_box(size, loc):
   sides = [
@@ -98,4 +99,13 @@ if __name__ == '__main__':
     draw = ImageDraw.Draw(im)
 
     draw_from_file(draw, '../data/room.txt', fov)
+    gray = cv2.cvtColor(np.array(im), cv2.COLOR_RGB2GRAY)
+    gray = np.float32(gray)
+    corners = cv2.goodFeaturesToTrack(gray, 100, 0.01, 10)
+    corners = [c[0] for c in np.int0(corners)]
+    for c in corners:
+        draw.rectangle(
+            [c[0]-5, c[1]-5, c[0]+5, c[1]+5],
+            fill=(0, 255, 0)
+        )
     im.show()

@@ -18,6 +18,7 @@ class MH(object):
 
         # Initialisation: pick an initial state x at random
         x = x_0
+        self.progress(x)
         prior_x = self.q(x)
         post_x = pi(x)
 
@@ -28,7 +29,6 @@ class MH(object):
             # randomly pick a state x' via G
             k = random.randrange(len(x))
             xp = self.G(x, k)
-            self.progress(xp)
 
             # compute the prior probability of x'
             prior_xp = self.q(xp)
@@ -36,6 +36,7 @@ class MH(object):
             # render x' into I_r' to compute pi(x')
             post_xp = pi(xp)
             if post_xp > post_max:
+                self.progress(xp)
                 x_max = xp
                 post_max = post_xp
 

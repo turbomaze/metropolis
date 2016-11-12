@@ -22,6 +22,6 @@ if __name__ == '__main__':
 
     # execution
     first_guess = problem.get_random_cube()
-    guess = metropolis.optimize(correct, first_guess, trials=100)
+    guess = metropolis.optimize(correct, first_guess, trials=200)
     print 'Answer: ', correct
     print 'Guess: ', guess

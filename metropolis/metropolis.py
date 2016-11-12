@@ -1,8 +1,16 @@
 import random
+import cv2
 import numpy as np
 from Tkinter import Label
 from utils import draw_from_model
 from PIL import Image, ImageDraw, ImageFilter, ImageTk
+
+
+def get_corners(img):
+    gray = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2GRAY)
+    gray = np.float32(gray)
+    corners = cv2.goodFeaturesToTrack(gray, 100, 0.01, 10)
+    return [c[0] for c in np.int0(corners)]
 
 
 class SquareProblem(object):
@@ -128,6 +136,13 @@ class CubeProblem(object):
         self.radius = radius
 
     def render(self, img):
+        draw = ImageDraw.Draw(img)
+        w = 3
+        for c in get_corners(img):
+            draw.rectangle(
+                [c[0]-w, c[1]-w, c[0]+w, c[1]+w],
+                fill=(0, 255, 0)
+            )
         tk_img = ImageTk.PhotoImage(img)
         label_image = Label(self.root, image=tk_img)
         label_image.place(
@@ -162,7 +177,7 @@ class CubeProblem(object):
 
     # G
     def get_next(self, x, k):
-        step = 4
+        step = 5.
         shift = random.uniform(-step, step)
         if x[k] + shift < 0 or x[k] + shift > self.max_loc:
             return x
@@ -173,23 +188,28 @@ class CubeProblem(object):
 
     def get_likelihood_func(self, answer):
         answer_img = self.get_image(answer)
-        blurred_a = answer_img.filter(
-            ImageFilter.GaussianBlur(radius=self.radius)
-        )
-        blurred_data_a = np.array(blurred_a.getdata())[:, 0]
+        corners_a = get_corners(answer_img)
         data_a = np.array(answer_img.getdata())[:, 0]
 
         def get_likelihood(x):
             b = self.get_image(x)
-            blurred_b = b.filter(
-                ImageFilter.GaussianBlur(radius=self.radius)
-            )
-            blurred_data_b = np.array(blurred_b.getdata())[:, 0]
+            corners_b = get_corners(b)
             data_b = np.array(b.getdata())[:, 0]
 
-            blurred_diff = np.subtract(blurred_data_a, blurred_data_b)
-            diff = np.subtract(data_a, data_b)
-            return 1./(np.linalg.norm(blurred_diff) + np.linalg.norm(diff))
+            # direct error
+            diff = np.linalg.norm(np.subtract(data_a, data_b))
+
+            # compare corner error
+            max_err = self.dims[0]**2 + self.dims[1]**2
+            corner_error = max_err * max(
+                0, len(corners_a) - len(corners_b)
+            )
+            for ca in corners_a:
+                for cb in corners_b:
+                    c_diff = np.subtract(ca, cb)
+                    corner_error += np.linalg.norm(c_diff)**2
+
+            return 1./(corner_error**0.5 + diff)
 
         return get_likelihood
 
