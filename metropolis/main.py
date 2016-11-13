@@ -91,6 +91,20 @@ def test002():
     )
     correct_img = problem.get_image(correct)
     correct_img.save('../data/correct.bmp')
+
+    swarm = PSO(
+        zip(mins*numBoxes, maxes*numBoxes),
+        problem.get_likelihood_func
+    )
+    first_guess = swarm.optimize(
+        10, 50, correct_img,
+        lambda x: render_particles(root, dims, x)
+    )
+    print 'First guess: ', first_guess
+    print 'First score: ', np.linalg.norm(np.subtract(first_guess, correct))
+    
+
+
     metropolis = MH(
         problem.get_next,
         problem.get_likelihood_func,
@@ -101,12 +115,13 @@ def test002():
     # execution
     first_guess = problem.get_random_cube()
     guess = metropolis.optimize(
-        correct_img, first_guess, trials=300
+        correct_img, first_guess, trials=160
     )
 
     im = problem.get_image(guess)
     im.save('../data/guess.bmp')
 
     print guess
+    print 'Score: ', np.linalg.norm(np.subtract(guess, correct))
 
 test001()
