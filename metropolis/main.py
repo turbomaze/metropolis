@@ -28,8 +28,8 @@ def render_particles(rt, dimensions, particles):
     rt.update()
 
 dims = (400, 300)
-mins = [0, 0, 0, 3]
-maxes = [20, 8, 12, 12]
+mins = [0, 0, 0, 2]
+maxes = [20, 20, 20, 10]
 root = Tk()
 root.geometry(str(dims[0]) + 'x' + str(dims[1]))
 
@@ -41,8 +41,11 @@ problem = CubeProblem(
     mins*numBoxes, maxes*numBoxes,
     radius=20
 )
-correct_img = problem.get_image(correct)
+# correct_img = problem.get_image(correct)
+correct_img = Image.open('../data/test-real-2.bmp')
 correct_img.save('../data/correct.bmp')
+
+
 metropolis = MH(
     problem.get_next,
     problem.get_likelihood_func,
