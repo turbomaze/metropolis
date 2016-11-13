@@ -142,7 +142,7 @@ class CubeProblem(object):
             ImageFilter.GaussianBlur(radius=self.radius)
         )
         draw = ImageDraw.Draw(img)
-        draw.text((30,10), str([round(c,3) for c in x]), fill="#000000")
+        draw.text((30, 10), str([round(c, 3) for c in x]), fill="#000000")
         tk_img = ImageTk.PhotoImage(img)
         label_image = Label(self.root, image=tk_img)
         label_image.place(
@@ -160,7 +160,9 @@ class CubeProblem(object):
             (x[3*i], 0, x[3*i+1]),
             '#ff0000',
             0
-        ] for i in range(0, self.num_boxes)]
+        ] for i in range(0, self.num_boxes)] + [
+            [20, (20.1, 0, 0), '#ffffff', 0]
+        ]
         return self.get_image_helper(model)
 
     def get_image_helper(self, model):
@@ -254,7 +256,7 @@ class PrismProblem(object):
             ImageFilter.GaussianBlur(radius=self.radius)
         )
         draw = ImageDraw.Draw(img)
-        draw.text((30,10), str([round(c,3) for c in x]), fill="#000000")
+        draw.text((30, 10), str([round(c,3) for c in x]), fill="#000000")
         tk_img = ImageTk.PhotoImage(img)
         label_image = Label(self.root, image=tk_img)
         label_image.place(
