@@ -27,20 +27,20 @@ def render_particles(rt, dimensions, particles):
     )
     rt.update()
 
-numBoxes = 1
 dims = (400, 300)
-mins = [0, 0, 0, 2]
+mins = [0, 0, 0, 3]
 maxes = [20, 8, 12, 12]
 root = Tk()
 root.geometry(str(dims[0]) + 'x' + str(dims[1]))
 
 # domain specific
+numBoxes = 2
+correct = [15., 0., 10., 7] + [16, 4, 6, 3]
 problem = CubeProblem(
     root, dims, numBoxes,
     mins*numBoxes, maxes*numBoxes,
     radius=20
 )
-correct = [15., 0., 10., 7]
 correct_img = problem.get_image(correct)
 correct_img.save('../data/correct.bmp')
 metropolis = MH(

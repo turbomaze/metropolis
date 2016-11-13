@@ -138,14 +138,10 @@ class CubeProblem(object):
         self.radius = radius
 
     def render(self, img, x):
-        img = self.get_image(x)
+        img = self.get_image(x).filter(
+            ImageFilter.GaussianBlur(radius=self.radius)
+        )
         draw = ImageDraw.Draw(img)
-        w = 3
-        for c in get_corners(img):
-            draw.rectangle(
-                [c[0]-w, c[1]-w, c[0]+w, c[1]+w],
-                fill=(0, 255, 0)
-            )
         draw.text((30,10), str([round(c,3) for c in x]), fill="#000000")
         tk_img = ImageTk.PhotoImage(img)
         label_image = Label(self.root, image=tk_img)
@@ -199,19 +195,22 @@ class CubeProblem(object):
             return tuple(x_list)
 
     def get_likelihood_func(self, goal_img):
-        small_size = (400, 300)
+        small_size = (200, 150)
         small_goal_img = goal_img.resize(
             small_size, Image.BILINEAR
+        ).filter(
+            ImageFilter.GaussianBlur(radius=self.radius)
         )
-        small_goal_img.show()
-        corners_a = get_corners(small_goal_img)
+        # corners_a = get_corners(small_goal_img)
         data_a = np.array(small_goal_img.getdata())
 
         def get_likelihood(x):
             b = self.get_image(x).resize(
                 small_size, Image.BILINEAR
+            ).filter(
+                ImageFilter.GaussianBlur(radius=self.radius)
             )
-            corners_b = get_corners(b)
+            # corners_b = get_corners(b)
             data_b = np.array(b.getdata())
 
             # direct error
@@ -225,16 +224,17 @@ class CubeProblem(object):
             )
 
             # compare corner error
-            max_err = self.dims[0]**2 + self.dims[1]**2
-            corner_error = max_err * max(
-                0, len(corners_a) - len(corners_b)
-            )
-            for ca in corners_a:
-                for cb in corners_b:
-                    c_diff = np.subtract(ca, cb)
-                    corner_error += np.linalg.norm(c_diff)**2
+            # max_err = self.dims[0]**2 + self.dims[1]**2
+            # corner_error = max_err * max(
+            #     0, len(corners_a) - len(corners_b)
+            # )
+            # for ca in corners_a:
+            #     for cb in corners_b:
+            #         c_diff = np.subtract(ca, cb)
+            #         corner_error += np.linalg.norm(c_diff)**2
 
-            return 1./(corner_error**0.5 + 0.1*diff)
+            # return max(1./corner_error**0.5,  0./(0.4*diff))
+            return 1./(0.4*diff)
 
         return get_likelihood
 
