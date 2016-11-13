@@ -29,6 +29,10 @@ def infer():
         base64_img = request.form['img']
         img = Image.open(BytesIO(base64.b64decode(base64_img)))
         img = img.convert('RGB')
+        if 3 * img.width != 4 * img.height:
+            img = img.crop(
+                (0, 0, (4/3.) * img.height, img.height)
+            )
         img = clean(img)
         img.save('./clean.png')
 
