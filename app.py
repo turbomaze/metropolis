@@ -5,7 +5,14 @@ import base64
 from metropolis.metropolis import CubeProblem
 from metropolis.mh import MH
 from metropolis.preprocess import clean
+import argparse
 app = Flask(__name__)
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--port', default='80')
+args = parser.parse_args()
+
 
 
 @app.route('/')
@@ -63,4 +70,4 @@ def infer():
         return jsonify(obj)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', port=int(args.port))
