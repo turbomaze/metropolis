@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--port', default='80')
-krgs = parser.parse_args()
+args = parser.parse_args()
 
 
 @app.route('/')
