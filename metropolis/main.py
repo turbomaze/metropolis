@@ -100,4 +100,4 @@ def test002():
 
     print guess
 
-test002()
+test001()
