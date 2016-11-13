@@ -2,7 +2,7 @@ from Tkinter import Tk, Label
 from PIL import Image, ImageDraw, ImageTk
 from metropolis import CubeProblem
 from mh import MH
-from pso import PSO
+from preprocess import clean
 
 
 def render_particles(rt, dimensions, particles):
@@ -42,7 +42,8 @@ problem = CubeProblem(
     radius=20
 )
 # correct_img = problem.get_image(correct)
-correct_img = Image.open('../data/test-real-2.bmp')
+correct_img = Image.open('../data/real3.JPG')
+correct_img = clean(correct_img)
 correct_img.save('../data/correct.bmp')
 
 

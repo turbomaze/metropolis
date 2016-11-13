@@ -4,7 +4,7 @@ from io import BytesIO
 import base64
 from metropolis.metropolis import CubeProblem
 from metropolis.mh import MH
-from metropolis.filter import clean
+from metropolis.preprocess import clean
 app = Flask(__name__)
 
 

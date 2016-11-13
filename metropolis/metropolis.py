@@ -177,10 +177,9 @@ class CubeProblem(object):
 
     def get_random_cube(self):
         return [
-                random.uniform(self.mins[i],self.maxes[i])
-                for i in range(0, len(self.mins))
+            random.uniform(self.mins[i], self.maxes[i])
+            for i in range(0, len(self.mins))
         ]
-
 
     # G
     def get_next(self, x, k, factor):
@@ -234,7 +233,7 @@ class CubeProblem(object):
             #         corner_error += np.linalg.norm(c_diff)**2
 
             # return max(1./corner_error**0.5,  0./(0.4*diff))
-            return 1./(0.4*diff)
+            return 1./diff
 
         return get_likelihood
 

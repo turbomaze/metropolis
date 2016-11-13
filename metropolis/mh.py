@@ -13,7 +13,6 @@ class MH(object):
         self.q = q
         self.progress = progress
 
-
     def optimize(self, goal_img, x_0, trials):
         start = time.clock()
         pi = self.pi_maker(goal_img)
