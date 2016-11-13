@@ -30,12 +30,12 @@ def infer():
         img = Image.open(BytesIO(base64.b64decode(base64_img)))
         img = img.convert('RGB')
         img = clean(img)
-        img.save('./clean.bmp')
+        img.save('./clean.png')
 
         problem = CubeProblem(
             None, (400, 300), num_boxes,
             mins=[0, 0, 0, 2]*num_boxes,
-            maxes=[20, 8, 15, 10]*num_boxes,
+            maxes=[20, 12, 15, 10]*num_boxes,
             radius=20
         )
         black = MH(
