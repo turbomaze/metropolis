@@ -35,9 +35,9 @@ def infer():
         img = clean(img)
         img.save('./clean.png')
 
-        all_mins = [0, 0, 2]*num_boxes
-        all_maxes = [20, 15, 8]*num_boxes
-        problem = CubeProblem(
+        all_mins = [0, 0, 2,2,2,2]*num_boxes
+        all_maxes = [20, 15, 8,8,8,8]*num_boxes
+        problem = PrismProblem(
             None, (400, 300), num_boxes,
             mins=all_mins,
             maxes=all_maxes,
@@ -68,8 +68,8 @@ def infer():
                 "y": 0,
                 "z": guess[3*i+1],
                 "l": guess[3*i+2],
-                "h": guess[3*i+2],
-                "w": guess[3*i+2],
+                "h": guess[3*i+3],
+                "w": guess[3*i+4],
                 "xRot": 0,
                 "yRot": 0,
                 "zRot": 0,
