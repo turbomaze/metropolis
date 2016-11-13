@@ -240,3 +240,115 @@ class CubeProblem(object):
 
     def get_prior_prob(self, x):
         return 1.
+
+class PrismProblem(object):
+    def __init__(self, root, dims, num_boxes, mins, maxes, radius):
+        self.root = root
+        self.dims = dims
+        self.num_boxes = num_boxes
+        self.mins = mins
+        self.maxes = maxes
+        self.radius = radius
+
+    def render(self, img, x):
+        img = self.get_image(x).filter(
+            ImageFilter.GaussianBlur(radius=self.radius)
+        )
+        draw = ImageDraw.Draw(img)
+        draw.text((30,10), str([round(c,3) for c in x]), fill="#000000")
+        tk_img = ImageTk.PhotoImage(img)
+        label_image = Label(self.root, image=tk_img)
+        label_image.place(
+            x=0, y=0,
+            width=img.size[0],
+            height=img.size[1]
+        )
+        self.root.update()
+
+    def get_image(self, x):
+        model = [
+            [20, (0, 0, 0), '#000000', 1]
+        ] + [[
+            (x[3*i+3],x[3*i+4],x[3*i+5]),
+            (x[3*i], x[3*i+1], x[3*i+2]),
+            '#ff0000',
+            0
+        ] for i in range(0, self.num_boxes)]
+        return self.get_image_helper(model)
+
+    def get_image_helper(self, model):
+        im = Image.new('RGB', self.dims, '#ffffff')
+        draw = ImageDraw.Draw(im)
+        camera = np.matrix([
+            [1, 0, 0],
+            [0, 1, 0],
+            [0, 0, 1],
+            [15, 10, 30]
+        ])
+        draw_from_model(draw, camera, model, fov=200)
+        return im
+
+    def get_random_cube(self):
+        retVal = [ random.uniform(self.mins[i],self.maxes[i]) for i in range(0, len(self.mins))]
+        print "Retval",retVal
+        return retVal
+
+
+    # G
+    def get_next(self, x, k, factor):
+        step = (self.maxes[k]-self.mins[k])/4.
+        shift = factor * random.uniform(0, step)
+
+        if x[k] + shift < self.mins[k] or x[k] + shift > self.maxes[k]:
+            return x
+        else:
+            x_list = list(x)
+            x_list[k] += shift
+            return tuple(x_list)
+
+    def get_likelihood_func(self, goal_img):
+        small_size = (200, 150)
+        small_goal_img = goal_img.resize(
+            small_size, Image.BILINEAR
+        ).filter(
+            ImageFilter.GaussianBlur(radius=self.radius)
+        )
+        # corners_a = get_corners(small_goal_img)
+        data_a = np.array(small_goal_img.getdata())
+
+        def get_likelihood(x):
+            b = self.get_image(x).resize(
+                small_size, Image.BILINEAR
+            ).filter(
+                ImageFilter.GaussianBlur(radius=self.radius)
+            )
+            # corners_b = get_corners(b)
+            data_b = np.array(b.getdata())
+
+            # direct error
+            a_sub_b = np.subtract(data_a, data_b)
+            diff = np.linalg.norm(
+                a_sub_b[:, 0]
+            ) + np.linalg.norm(
+                a_sub_b[:, 1]
+            ) + np.linalg.norm(
+                a_sub_b[:, 2]
+            )
+
+            # compare corner error
+            # max_err = self.dims[0]**2 + self.dims[1]**2
+            # corner_error = max_err * max(
+            #     0, len(corners_a) - len(corners_b)
+            # )
+            # for ca in corners_a:
+            #     for cb in corners_b:
+            #         c_diff = np.subtract(ca, cb)
+            #         corner_error += np.linalg.norm(c_diff)**2
+
+            # return max(1./corner_error**0.5,  0./(0.4*diff))
+            return 1./(0.4*diff)
+
+        return get_likelihood
+
+    def get_prior_prob(self, x):
+        return 1.

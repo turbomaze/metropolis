@@ -14,6 +14,19 @@ def get_box(size, loc):
 
   return [np.array(side) for side in sides]
 
+#Takes in three sizes - one for the width, other for length. 
+def get_rect(size, loc):
+  sides = [
+  [[loc[i]+dr[i] for i in range (0,3)] for dr in [[0,0,0],[size[0],0,0],[size[0],size[1],0],[0,size[1],0]]],
+  [[loc[i]+dr[i] for i in range (0,3)] for dr in [[0,0,0],[size[0],0,0],[size[0],0,size[2]],[0,0,size[2]]]],
+  [[loc[i]+dr[i] for i in range (0,3)] for dr in [[0,0,0],[0,0,size[2]],[0,size[1],size[2]],[0,size[1],0]]],
+  [[loc[i]+dr[i] for i in range (0,3)] for dr in [[0,size[1],0],[size[0],size[1],0],[size[0],size[1],size[2]],[0,size[1],size[2]]]],
+  [[loc[i]+dr[i] for i in range (0,3)] for dr in [[size[0],0,0],[size[0],size[1],0],[size[0],size[1],size[2]],[size[0],0,size[2]]]],
+  [[loc[i]+dr[i] for i in range (0,3)] for dr in [[0,0,size[2]],[0,size[1],size[2]],[size[0],size[1],size[2]],[size[0],0,size[2]]]]
+  ]
+
+  return [np.array(side) for side in sides]
+
 
 def draw_polygons(drawer, polygons):
   w = drawer.im.size[0]
@@ -37,6 +50,9 @@ def get_local_proj(M,points,fov):
   local = local_coord(M, points)
   return project(local,fov)
 
+
+#Box: size
+#Rect: l, w, h
 def draw_from_file(drawer, filename, fov):
   f = open(filename).readlines()
   camera = np.matrix([map(float, t[1:-1].split(",")) for t in f[0].strip().split(" ")])
@@ -45,14 +61,41 @@ def draw_from_file(drawer, filename, fov):
   polygons = []
   for line in f[1:]:
     arr = line.strip().split(" ")
+    if line[0] == "#":
+      continue
 
     if arr[0] == "box":
       size = float(arr[1])
       loc = map(float,arr[2][1:-1].split(","))
       color = arr[3]
       wireframe = int(arr[4])
+      
+      print size
+      print loc
+      print color
+      print wireframe
+
 
       sides = get_box(size,loc)
+      for side in sides:
+        proj = get_local_proj(M,side,fov)
+        polygons.append([map(tuple, np.array(proj)),color,wireframe])
+    elif arr[0] == "rect":
+
+      size1 = float(arr[1].split(",")[0])
+      size2 = float(arr[1].split(",")[1])
+      size3 = float(arr[1].split(",")[2])
+      loc = map(float,arr[2][1:-1].split(","))
+      color = arr[3]
+      wireframe = int(arr[4])
+      
+      print size
+      print loc
+      print color
+      print wireframe
+
+
+      sides = get_rect((size1,size2,size3),loc)
       for side in sides:
         proj = get_local_proj(M,side,fov)
         polygons.append([map(tuple, np.array(proj)),color,wireframe])
@@ -68,6 +111,7 @@ def draw_from_file(drawer, filename, fov):
 
   draw_polygons(drawer, polygons)
 
+#Okay we are going to generalize this function to work for prisms in general, and then cubes will be easily covered as well. 
 def draw_from_model(drawer, camera, model, fov):
     M = np.concatenate(
         (camera, np.array([[0, 0, 0, 1]]).T), axis=1
@@ -75,17 +119,24 @@ def draw_from_model(drawer, camera, model, fov):
 
     polygons = []
     for box in model:
-        size = float(box[0])
-        loc = box[1]
-        color = box[2]
-        wireframe = float(box[3])
+      #Legacy handler
+      try:
+        b = len(box[0])
+      except:
+        box[0] = (box[0],box[0],box[0])
+      #Now for the box rendering
+      #print box[0]
+      size = [float(box[0][0]),float(box[0][1]),float(box[0][2])]
+      loc = box[1]
+      color = box[2]
+      wireframe = float(box[3])
 
-        sides = get_box(size, loc)
-        for side in sides:
-            proj = get_local_proj(M, side, fov)
-            polygons.append([
-                map(tuple, np.array(proj)), color, wireframe
-            ])
+      sides = get_rect((size[0],size[1],size[2]), loc)
+      for side in sides:
+          proj = get_local_proj(M, side, fov)
+          polygons.append([
+              map(tuple, np.array(proj)), color, wireframe
+          ])
     draw_polygons(drawer, polygons)
 
 
@@ -98,7 +149,7 @@ if __name__ == '__main__':
     im = Image.new(mode, size, color)
     draw = ImageDraw.Draw(im)
 
-    draw_from_file(draw, '../data/room.txt', fov)
+    draw_from_file(draw, '../data/room_painting.txt', fov)
     gray = cv2.cvtColor(np.array(im), cv2.COLOR_RGB2GRAY)
     gray = np.float32(gray)
     corners = cv2.goodFeaturesToTrack(gray, 100, 0.01, 10)
