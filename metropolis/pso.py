@@ -17,7 +17,7 @@ class PSO(object):
         self._w = 0.5729
         self._p = 0.15
         self._g = 0.13
-        self._r = 0.015
+        self._r = 0.085
         self._iv = 0.5
 
         self.d = len(params)
@@ -96,6 +96,6 @@ class PSO(object):
         duration = time.clock() - start
         print str(t) + ' steps in ' + str(duration) + 's'
 
-        return False
+        return self.pos_to_params(best_pos)
 
 

@@ -1,7 +1,9 @@
+import numpy as np
 from Tkinter import Tk, Label
 from PIL import Image, ImageDraw, ImageTk
 from metropolis import CubeProblem, PrismProblem
 from mh import MH
+from pso import PSO
 from preprocess import clean
 
 
@@ -35,7 +37,6 @@ def test001():
     root.geometry(str(dims[0]) + 'x' + str(dims[1]))
 
     # domain specific
-
     numBoxes = 2
     correct = [0., 0., 5.] + [16., 0., 5.]
     problem = CubeProblem(
@@ -44,25 +45,35 @@ def test001():
         radius=20
     )
     correct_img = problem.get_image(correct)
-    print "save"
     correct_img.save('../data/correct.bmp')
-    metropolis = MH(
-        problem.get_next,
-        problem.get_likelihood_func,
-        problem.get_prior_prob,
-        lambda x: problem.render(problem.get_image(x), x)
-    )
 
-    # execution
-    first_guess = problem.get_random_cube()
-    guess = metropolis.optimize(
-        correct_img, first_guess, trials=400
-    )
+    use_metropolis = False
+    guess = None
+    if use_metropolis:
+        metropolis = MH(
+            problem.get_next,
+            problem.get_likelihood_func,
+            problem.get_prior_prob,
+            lambda x: problem.render(problem.get_image(x), x)
+        )
+        first_guess = problem.get_random_cube()
+        guess = metropolis.optimize(
+            correct_img, first_guess, trials=210
+        )
+    else:
+        swarm = PSO(
+            zip(mins*numBoxes, maxes*numBoxes),
+            problem.get_likelihood_func
+        )
+        guess = swarm.optimize(
+            8, 50, correct_img,
+            lambda x: render_particles(root, dims, x)
+        )
 
     im = problem.get_image(guess)
     im.save('../data/guess.bmp')
-
-    print guess
+    print 'Guess: ', guess
+    print 'Score: ', np.linalg.norm(np.subtract(guess, correct))
 
 #This test the prism renderer.
 def test002():

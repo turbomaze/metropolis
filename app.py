@@ -3,16 +3,14 @@ from PIL import Image
 from io import BytesIO
 import base64
 from metropolis.metropolis import CubeProblem
-from metropolis.mh import MH
+from metropolis.pso import PSO
 from metropolis.preprocess import clean
 import argparse
 app = Flask(__name__)
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument('--port', default='80')
-args = parser.parse_args()
-
+krgs = parser.parse_args()
 
 
 @app.route('/')
@@ -36,21 +34,21 @@ def infer():
         img = clean(img)
         img.save('./clean.png')
 
+        all_mins = [0, 0, 2]*num_boxes
+        all_maxes = [20, 15, 8]*num_boxes
         problem = CubeProblem(
             None, (400, 300), num_boxes,
-            mins=[0, 0, 2]*num_boxes,
-            maxes=[20, 15, 8]*num_boxes,
+            mins=all_mins,
+            maxes=all_maxes,
             radius=20
         )
-        black = MH(
-            problem.get_next,
-            problem.get_likelihood_func,
-            problem.get_prior_prob,
-            lambda x: x
+        swarm = PSO(
+            zip(all_mins, all_maxes),
+            problem.get_likelihood_func
         )
-        first_guess = problem.get_random_cube()
-        guess = black.optimize(
-            img, first_guess, trials=500
+        guess = swarm.optimize(
+            8, 50, img,
+            lambda x: x
         )
         problem.get_image(guess).save('./guess.png')
         obj = [
