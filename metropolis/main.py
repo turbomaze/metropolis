@@ -29,7 +29,7 @@ def render_particles(rt, dimensions, particles):
 
 dims = (400, 300)
 mins = [0, 0, 0, 2]
-maxes = [20, 20, 20, 10]
+maxes = [20, 10, 20, 10]
 root = Tk()
 root.geometry(str(dims[0]) + 'x' + str(dims[1]))
 
@@ -41,9 +41,9 @@ problem = CubeProblem(
     mins*numBoxes, maxes*numBoxes,
     radius=20
 )
-# correct_img = problem.get_image(correct)
-correct_img = Image.open('../data/real3.JPG')
-correct_img = clean(correct_img)
+correct_img = problem.get_image(correct)
+# correct_img = Image.open('../data/real3.JPG')
+# correct_img = clean(correct_img)
 correct_img.save('../data/correct.bmp')
 
 

@@ -39,7 +39,9 @@ class MH(object):
 
             post_xpp = pi(x2)
 
-            factor = np.sign(post_xpp - post_x)
+            factor = (1. - i*(0.5/trials)) * np.sign(
+                post_xpp - post_x
+            )
             xp = self.G(x, k, factor)
 
             # compute the prior probability of x'
