@@ -1,4 +1,4 @@
-from flask import Flask, redirect, request, jsonify
+from flask import Flask, redirect, request, jsonify, send_from_directory
 from PIL import Image
 from io import BytesIO
 import base64
@@ -16,7 +16,7 @@ args = parser.parse_args()
 
 @app.route('/')
 def home():
-    return redirect('http://github.com/turbomaze/metropolis', 301)
+    return send_from_directory('', 'index.html')
 
 
 @app.route('/infer', methods=['GET', 'POST'])
