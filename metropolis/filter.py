@@ -11,12 +11,12 @@ def clean(im):
   for i in range (0,400):
     for j in range(0,300):
       p = im.getpixel((i,j))
-      im.putpixel((i,j), filter(p))
+      im.putpixel((i,j), collapse(p))
 
   return im
 
 
-def filter(pixel):
+def collapse(pixel):
   r = pixel[0]
   g = pixel[1]
   b = pixel[2]
@@ -28,9 +28,3 @@ def filter(pixel):
     return (255,0,0) #red
   else:
     return (255,255,255) #white
-
-im = Image.open("../data/real2.JPG")
-im.show()
-cleaned = clean(im)
-cleaned.show()
-cleaned.save("../data/test-real-2.bmp")
