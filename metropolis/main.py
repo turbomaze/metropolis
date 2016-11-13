@@ -1,7 +1,7 @@
 import numpy as np
 from Tkinter import Tk, Label
 from PIL import Image, ImageDraw, ImageTk
-from metropolis import CubeProblem, PrismProblem
+from metropolis import CubeProblem, PrismProblem, FurnitureProblem
 from mh import MH
 from pso import PSO
 from preprocess import clean
@@ -31,20 +31,21 @@ def render_particles(rt, dimensions, particles):
 
 def test001():
     dims = (400, 300)
-    mins = [0, 0, 3]
-    maxes = [20, 18, 8]
+    mins = [0, 0, 0, 2]
+    maxes = [17, 15, 15, 8]
     root = Tk()
     root.geometry(str(dims[0]) + 'x' + str(dims[1]))
 
     # domain specific
-    numBoxes = 2
-    correct = [0., 0., 5.] + [14., 0., 5.]
+    numBoxes = 1
+    correct = [0., 0., 0., 5.]
     problem = CubeProblem(
         root, dims, numBoxes,
         mins*numBoxes, maxes*numBoxes,
         radius=20
     )
     correct_img = problem.get_image(correct)
+    correct_img = Image.open('../data/test-real.bmp')
     correct_img.save('../data/correct.bmp')
 
     swarm = PSO(
@@ -52,7 +53,7 @@ def test001():
         problem.get_likelihood_func
     )
     first_guess = swarm.optimize(
-        8, 80, correct_img,
+        8, 60, correct_img,
         lambda x: render_particles(root, dims, x)
     )
     print 'First guess: ', first_guess
@@ -64,7 +65,7 @@ def test001():
         lambda x: problem.render(problem.get_image(x), x)
     )
     guess = metropolis.optimize(
-        correct_img, first_guess, trials=80
+        correct_img, first_guess, trials=200
     )
 
     im = problem.get_image(guess)
@@ -102,7 +103,7 @@ def test002():
     )
     print 'First guess: ', first_guess
     print 'First score: ', np.linalg.norm(np.subtract(first_guess, correct))
-    
+
 
 
     metropolis = MH(
@@ -122,6 +123,51 @@ def test002():
     im.save('../data/guess.bmp')
 
     print guess
+    print 'Score: ', np.linalg.norm(np.subtract(guess, correct))
+
+def test003():
+    dims = (400, 300)
+    mins = [0, 0, 0, 0, 0]
+    maxes = [3, 7, 7, 7, 7]
+    root = Tk()
+    root.geometry(str(dims[0]) + 'x' + str(dims[1]))
+
+    # domain specific
+    numBoxes = 2
+    correct = [1., 2., 3., 6., 2.] + [3., 2., 3., 6., 2.]
+    problem = FurnitureProblem(
+        root, dims, numBoxes,
+        mins*numBoxes, maxes*numBoxes,
+        radius=12
+    )
+    correct_img = problem.get_image(correct)
+    correct_img.save('../data/correct.bmp')
+
+    swarm = PSO(
+        zip(mins*numBoxes, maxes*numBoxes),
+        problem.get_likelihood_func
+    )
+    first_guess = swarm.optimize(
+        8, 3, correct_img,
+        lambda x: render_particles(root, dims, x)
+    )
+    print 'First guess: ', first_guess
+    print 'First score: ', np.linalg.norm(
+        np.subtract(first_guess, correct)
+    )
+    metropolis = MH(
+        problem.get_next,
+        problem.get_likelihood_func,
+        problem.get_prior_prob,
+        lambda x: problem.render(problem.get_image(x), x)
+    )
+    guess = metropolis.optimize(
+        correct_img, first_guess, trials=900
+    )
+
+    im = problem.get_image(guess)
+    im.save('../data/guess.bmp')
+    print 'Guess: ', guess
     print 'Score: ', np.linalg.norm(np.subtract(guess, correct))
 
 test001()

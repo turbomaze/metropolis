@@ -142,17 +142,17 @@ def draw_from_model(drawer, camera, model, fov):
 
 if __name__ == '__main__':
     mode = "RGB"
-    size = (512, 512)
+    size = (768, 768)
     color = "#ffffff"
     fov = 200
 
     im = Image.new(mode, size, color)
     draw = ImageDraw.Draw(im)
 
-    draw_from_file(draw, '../data/room_painting.txt', fov)
+    draw_from_file(draw, '../data/room.txt', fov)
     gray = cv2.cvtColor(np.array(im), cv2.COLOR_RGB2GRAY)
     gray = np.float32(gray)
-    corners = cv2.goodFeaturesToTrack(gray, 100, 0.01, 10)
+    corners = cv2.goodFeaturesToTrack(gray, 30, 0.01, 10)
     corners = [c[0] for c in np.int0(corners)]
     for c in corners:
         draw.rectangle(
