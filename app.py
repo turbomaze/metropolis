@@ -43,12 +43,12 @@ def infer():
         obj = [
             {
                 "shape": "cube",
-                "x": guess[3*i],
-                "y": guess[3*i+1],
-                "z": guess[3*i+2],
-                "l": guess[3*i+3],
-                "h": guess[3*i+3],
-                "w": guess[3*i+3],
+                "x": guess[4*i],
+                "y": guess[4*i+1],
+                "z": guess[4*i+2],
+                "l": guess[4*i+3],
+                "h": guess[4*i+3],
+                "w": guess[4*i+3],
                 "xRot": 0,
                 "yRot": 0,
                 "zRot": 0,
