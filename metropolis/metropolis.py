@@ -1,16 +1,8 @@
 import random
-import cv2
 import numpy as np
 from Tkinter import Label
 from utils import draw_from_model
 from PIL import Image, ImageDraw, ImageFilter, ImageTk
-
-
-def get_corners(img):
-    gray = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2GRAY)
-    gray = np.float32(gray)
-    corners = cv2.goodFeaturesToTrack(gray, 50, 0.01, 10)
-    return [c[0] for c in np.int0(corners)]
 
 
 class SquareProblem(object):
@@ -202,7 +194,6 @@ class CubeProblem(object):
         ).filter(
             ImageFilter.GaussianBlur(radius=self.radius)
         )
-        # corners_a = get_corners(small_goal_img)
         data_a = np.array(small_goal_img.getdata())
 
         def get_likelihood(x):
@@ -211,7 +202,6 @@ class CubeProblem(object):
             ).filter(
                 ImageFilter.GaussianBlur(radius=self.radius)
             )
-            # corners_b = get_corners(b)
             data_b = np.array(b.getdata())
 
             # direct error
@@ -223,18 +213,6 @@ class CubeProblem(object):
             ) + np.linalg.norm(
                 a_sub_b[:, 2]
             )
-
-            # compare corner error
-            # max_err = self.dims[0]**2 + self.dims[1]**2
-            # corner_error = max_err * max(
-            #     0, len(corners_a) - len(corners_b)
-            # )
-            # for ca in corners_a:
-            #     for cb in corners_b:
-            #         c_diff = np.subtract(ca, cb)
-            #         corner_error += np.linalg.norm(c_diff)**2
-
-            # return max(1./corner_error**0.5,  0./(0.4*diff))
             return 1./diff
 
         return get_likelihood
@@ -256,3 +234,91 @@ class PrismProblem(CubeProblem):
             [20, (20.1, 0, 0), '#ffffff', 0]
         ]
         return self.get_image_helper(model)
+
+
+class FurnitureProblem(CubeProblem):
+    def get_furniture_from_type(self, y, x):
+        t = int(y)
+        if t == 1:
+            return [
+                (x[0], x[1], x[2]),
+                (0, 0, x[3]),
+                '#ff0000',
+                0
+            ]
+        elif t == 2:
+            return [
+                (x[0], x[1], x[2]),
+                (x[3], 0, 0),
+                '#ff0000',
+                0
+            ]
+        elif t == 3:
+            return [
+                (x[0], x[1], x[2]),
+                (20-x[0], 0, x[3]),
+                '#ff0000',
+                0
+            ]
+        else:
+            return [
+                (0, 0, 0),
+                (0, 0, 0),
+                '#ff0000',
+                0
+            ]
+
+    def get_next(self, x, k, factor):
+        if k % 5 == 0:
+            new_type = random.randrange(0, 4)
+            x_list = list(x)
+            x_list[k] = new_type
+            return tuple(x_list)
+        else:
+            step = (self.maxes[k]-self.mins[k])/8.
+            shift = factor * random.uniform(0, step)
+
+            if x[k] + shift < self.mins[k] or x[k] + shift > self.maxes[k]:
+                return x
+            else:
+                x_list = list(x)
+                x_list[k] += shift
+                return tuple(x_list)
+
+    def get_image(self, x):
+        model = [
+            [(20, 20, 20), (0, 0, 0), '#000000', 1]
+        ] + [self.get_furniture_from_type(
+            x[i*5], x[i*5+1:(i+1)*5]
+        ) for i in range(0, self.num_boxes)]
+        return self.get_image_helper(model)
+
+    def get_likelihood_func(self, goal_img):
+        small_size = (200, 150)
+        small_goal_img = goal_img.resize(
+            small_size, Image.BILINEAR
+        ).filter(
+            ImageFilter.GaussianBlur(radius=self.radius)
+        )
+        data_a = np.array(small_goal_img.getdata())
+
+        def get_likelihood(x):
+            b = self.get_image(x).resize(
+                small_size, Image.BILINEAR
+            ).filter(
+                ImageFilter.GaussianBlur(radius=self.radius)
+            )
+            data_b = np.array(b.getdata())
+
+            # direct error
+            a_sub_b = np.subtract(data_a, data_b)
+            diff = np.linalg.norm(
+                a_sub_b[:, 0]
+            ) + np.linalg.norm(
+                a_sub_b[:, 1]
+            ) + np.linalg.norm(
+                a_sub_b[:, 2]
+            )
+            return 1./diff
+
+        return get_likelihood
