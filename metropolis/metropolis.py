@@ -242,14 +242,14 @@ class CubeProblem(object):
     def get_prior_prob(self, x):
         return 1.
 
+
 class PrismProblem(CubeProblem):
-    
     def get_image(self, x):
         model = [
             [20, (0, 0, 0), '#000000', 1]
         ] + [[
-            (x[3*i+3],x[3*i+4],x[3*i+5]),
-            (x[3*i], x[3*i+1], x[3*i+2]),
+            (x[5*i+2], x[5*i+3], x[5*i+4]),
+            (x[5*i], 0, x[5*i+1]),
             '#ff0000',
             0
         ] for i in range(0, self.num_boxes)] + [

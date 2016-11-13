@@ -2,7 +2,7 @@ from flask import Flask, redirect, request, jsonify
 from PIL import Image
 from io import BytesIO
 import base64
-from metropolis.metropolis import CubeProblem
+from metropolis.metropolis import CubeProblem, PrismProblem
 from metropolis.pso import PSO
 from metropolis.mh import MH
 from metropolis.preprocess import clean
@@ -35,8 +35,8 @@ def infer():
         img = clean(img)
         img.save('./clean.png')
 
-        all_mins = [0, 0, 2,2,2,2]*num_boxes
-        all_maxes = [20, 15, 8,8,8,8]*num_boxes
+        all_mins = [0, 0, 2, 2, 2]*num_boxes
+        all_maxes = [20, 15, 8, 8, 8]*num_boxes
         problem = PrismProblem(
             None, (400, 300), num_boxes,
             mins=all_mins,
@@ -64,12 +64,12 @@ def infer():
         obj = [
             {
                 "shape": "cube",
-                "x": guess[3*i],
+                "x": guess[5*i],
                 "y": 0,
-                "z": guess[3*i+1],
-                "l": guess[3*i+2],
-                "h": guess[3*i+3],
-                "w": guess[3*i+4],
+                "z": guess[5*i+1],
+                "l": guess[5*i+2],
+                "h": guess[5*i+3],
+                "w": guess[5*i+4],
                 "xRot": 0,
                 "yRot": 0,
                 "zRot": 0,
