@@ -35,7 +35,7 @@ root.geometry(str(dims[0]) + 'x' + str(dims[1]))
 
 # domain specific
 numBoxes = 2
-correct = [15., 0., 10., 7] + [16, 4, 6, 3]
+correct = [0., 10., 0., 3] + [16, 4, 6, 3]
 problem = CubeProblem(
     root, dims, numBoxes,
     mins*numBoxes, maxes*numBoxes,
@@ -56,7 +56,7 @@ metropolis = MH(
 # execution
 first_guess = problem.get_random_cube()
 guess = metropolis.optimize(
-    correct_img, first_guess, trials=200
+    correct_img, first_guess, trials=500
 )
 
 im = problem.get_image(guess)

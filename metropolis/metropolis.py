@@ -195,7 +195,7 @@ class CubeProblem(object):
             return tuple(x_list)
 
     def get_likelihood_func(self, goal_img):
-        small_size = (200, 150)
+        small_size = (100, 75)
         small_goal_img = goal_img.resize(
             small_size, Image.BILINEAR
         ).filter(
