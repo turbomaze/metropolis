@@ -156,8 +156,8 @@ class CubeProblem(object):
         model = [
             [20, (0, 0, 0), '#000000', 1]
         ] + [[
-            x[4*i+3],
-            (x[4*i], x[4*i+1], x[4*i+2]),
+            x[3*i+2],
+            (x[3*i], 0, x[3*i+1]),
             '#ff0000',
             0
         ] for i in range(0, self.num_boxes)]

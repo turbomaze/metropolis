@@ -34,8 +34,8 @@ def infer():
 
         problem = CubeProblem(
             None, (400, 300), num_boxes,
-            mins=[0, 0, 0, 2]*num_boxes,
-            maxes=[20, 12, 15, 10]*num_boxes,
+            mins=[0, 0, 2]*num_boxes,
+            maxes=[20, 15, 8]*num_boxes,
             radius=20
         )
         black = MH(
@@ -52,12 +52,12 @@ def infer():
         obj = [
             {
                 "shape": "cube",
-                "x": guess[4*i],
-                "y": guess[4*i+1],
-                "z": guess[4*i+2],
-                "l": guess[4*i+3],
-                "h": guess[4*i+3],
-                "w": guess[4*i+3],
+                "x": guess[3*i],
+                "y": 0,
+                "z": guess[3*i+1],
+                "l": guess[3*i+2],
+                "h": guess[3*i+2],
+                "w": guess[3*i+2],
                 "xRot": 0,
                 "yRot": 0,
                 "zRot": 0,

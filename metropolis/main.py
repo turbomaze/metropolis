@@ -29,15 +29,15 @@ def render_particles(rt, dimensions, particles):
 
 def test001():
     dims = (400, 300)
-    mins = [0, 0, 0, 3]
-    maxes = [20, 12, 18, 8]
+    mins = [0, 0, 3]
+    maxes = [20, 18, 8]
     root = Tk()
     root.geometry(str(dims[0]) + 'x' + str(dims[1]))
 
     # domain specific
 
     numBoxes = 2
-    correct = [0., 0., 0., 5.] + [16., 0., 0., 5.]
+    correct = [0., 0., 5.] + [16., 0., 5.]
     problem = CubeProblem(
         root, dims, numBoxes,
         mins*numBoxes, maxes*numBoxes,
