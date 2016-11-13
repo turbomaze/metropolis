@@ -185,7 +185,7 @@ class CubeProblem(object):
 
     # G
     def get_next(self, x, k, factor):
-        step = (self.maxes[k]-self.mins[k])/4.
+        step = (self.maxes[k]-self.mins[k])/8.
         shift = factor * random.uniform(0, step)
 
         if x[k] + shift < self.mins[k] or x[k] + shift > self.maxes[k]:

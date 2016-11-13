@@ -27,21 +27,17 @@ class MH(object):
         x_max = x
         post_max = post_x
         for i in range(trials):
-            if i % 5 == 0:
+            if i % 10 == 0:
                 print i, post_max, map(lambda x: round(x, 1), x_max)
 
             # randomly pick a state x' via G
+            nudge = 0.05
             k = i % len(x)
-
             x_list = list(x)
-            x_list[k] += 0.1
+            x_list[k] += nudge
             xpp = tuple(x_list)
 
-            post_xpp = pi(xpp)
-
-            factor = (1. - i*(0.5/trials)) * np.sign(
-                post_xpp - post_x
-            )
+            factor = nudge * np.sign(pi(xpp) - post_x)
             xp = self.G(x, k, factor)
 
             # compute the prior probability of x'

@@ -4,6 +4,7 @@ from io import BytesIO
 import base64
 from metropolis.metropolis import CubeProblem
 from metropolis.pso import PSO
+from metropolis.mh import MH
 from metropolis.preprocess import clean
 import argparse
 app = Flask(__name__)
@@ -46,9 +47,18 @@ def infer():
             zip(all_mins, all_maxes),
             problem.get_likelihood_func
         )
-        guess = swarm.optimize(
-            8, 50, img,
+        first_guess = swarm.optimize(
+            8, 80, img,
             lambda x: x
+        )
+        metropolis = MH(
+            problem.get_next,
+            problem.get_likelihood_func,
+            problem.get_prior_prob,
+            lambda x: x
+        )
+        guess = metropolis.optimize(
+            img, first_guess, trials=80
         )
         problem.get_image(guess).save('./guess.png')
         obj = [

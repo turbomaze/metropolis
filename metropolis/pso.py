@@ -60,7 +60,8 @@ class PSO(object):
 
         # iterate
         for _ in range(t):
-            print best, self.pos_to_params(best_pos)
+            if _ % 10 == 0:
+                print best, self.pos_to_params(best_pos)
             for i in range(n):
                 p = particles[i]
 
