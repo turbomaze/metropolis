@@ -4,6 +4,7 @@ from io import BytesIO
 import base64
 from metropolis.metropolis import CubeProblem
 from metropolis.mh import MH
+from metropolis.preprocess import clean
 app = Flask(__name__)
 
 
@@ -21,6 +22,8 @@ def infer():
         base64_img = request.form['img']
         img = Image.open(BytesIO(base64.b64decode(base64_img)))
         img = img.convert('RGB')
+        img = clean(img)
+
         problem = CubeProblem(
             None, (400, 300), num_boxes,
             mins=[0, 0, 0, 2]*num_boxes,
@@ -40,12 +43,12 @@ def infer():
         obj = [
             {
                 "shape": "cube",
-                "x": guess[3*i],
-                "y": guess[3*i+1],
-                "z": guess[3*i+2],
-                "l": guess[3*i+3],
-                "h": guess[3*i+3],
-                "w": guess[3*i+3],
+                "x": guess[4*i],
+                "y": guess[4*i+1],
+                "z": guess[4*i+2],
+                "l": guess[4*i+3],
+                "h": guess[4*i+3],
+                "w": guess[4*i+3],
                 "xRot": 0,
                 "yRot": 0,
                 "zRot": 0,

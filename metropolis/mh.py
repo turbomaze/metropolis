@@ -13,7 +13,6 @@ class MH(object):
         self.q = q
         self.progress = progress
 
-
     def optimize(self, goal_img, x_0, trials):
         start = time.clock()
         pi = self.pi_maker(goal_img)
@@ -40,7 +39,9 @@ class MH(object):
 
             post_xpp = pi(x2)
 
-            factor = np.sign(post_xpp - post_x)
+            factor = (1. - i*(0.5/trials)) * np.sign(
+                post_xpp - post_x
+            )
             xp = self.G(x, k, factor)
 
             # compute the prior probability of x'

@@ -2,7 +2,7 @@ from Tkinter import Tk, Label
 from PIL import Image, ImageDraw, ImageTk
 from metropolis import CubeProblem, PrismProblem
 from mh import MH
-from pso import PSO
+from preprocess import clean
 
 
 def render_particles(rt, dimensions, particles):
