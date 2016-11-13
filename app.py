@@ -35,9 +35,9 @@ def infer():
         img = clean(img)
         img.save('./clean.png')
 
-        all_mins = [0, 0, 2, 2, 2]*num_boxes
-        all_maxes = [20, 15, 8, 8, 8]*num_boxes
-        problem = PrismProblem(
+        all_mins = [0, 0, 0, 2]*num_boxes
+        all_maxes = [17, 15, 15, 8]*num_boxes
+        problem = CubeProblem(
             None, (400, 300), num_boxes,
             mins=all_mins,
             maxes=all_maxes,
@@ -48,7 +48,7 @@ def infer():
             problem.get_likelihood_func
         )
         first_guess = swarm.optimize(
-            8, 80, img,
+            8, 60, img,
             lambda x: x
         )
         metropolis = MH(
@@ -58,18 +58,18 @@ def infer():
             lambda x: x
         )
         guess = metropolis.optimize(
-            img, first_guess, trials=80
+            img, first_guess, trials=200
         )
         problem.get_image(guess).save('./guess.png')
         obj = [
             {
                 "shape": "cube",
-                "x": guess[5*i],
+                "x": guess[3*i],
                 "y": 0,
-                "z": guess[5*i+1],
-                "l": guess[5*i+2],
-                "h": guess[5*i+3],
-                "w": guess[5*i+4],
+                "z": guess[3*i+1],
+                "l": guess[3*i+2],
+                "h": guess[3*i+2],
+                "w": guess[3*i+2],
                 "xRot": 0,
                 "yRot": 0,
                 "zRot": 0,

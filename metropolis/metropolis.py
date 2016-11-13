@@ -148,8 +148,8 @@ class CubeProblem(object):
         model = [
             [20, (0, 0, 0), '#000000', 1]
         ] + [[
-            x[3*i+2],
-            (x[3*i], 0, x[3*i+1]),
+            x[4*i+3],
+            (x[4*i], x[4*i+1], x[4*i+2]),
             '#ff0000',
             0
         ] for i in range(0, self.num_boxes)] + [
@@ -294,7 +294,7 @@ class FurnitureProblem(CubeProblem):
         return self.get_image_helper(model)
 
     def get_likelihood_func(self, goal_img):
-        small_size = (200, 150)
+        small_size = (100, 75)
         small_goal_img = goal_img.resize(
             small_size, Image.BILINEAR
         ).filter(
