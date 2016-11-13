@@ -23,6 +23,7 @@ def infer():
         img = Image.open(BytesIO(base64.b64decode(base64_img)))
         img = img.convert('RGB')
         img = clean(img)
+        img.save('./clean.bmp')
 
         problem = CubeProblem(
             None, (400, 300), num_boxes,
@@ -40,6 +41,7 @@ def infer():
         guess = black.optimize(
             img, first_guess, trials=100
         )
+        problem.get_image(guess).save('./guess.png')
         obj = [
             {
                 "shape": "cube",

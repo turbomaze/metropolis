@@ -101,4 +101,3 @@ def test002():
     print guess
 
 test002()
-
