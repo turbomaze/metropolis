@@ -14,7 +14,7 @@ def get_box(size, loc):
 
   return [np.array(side) for side in sides]
 
-#Takes in three sizes - one for the width, other for length. 
+#Takes in three sizes - one for the width, other for length.
 def get_rect(size, loc):
   sides = [
   [[loc[i]+dr[i] for i in range (0,3)] for dr in [[0,0,0],[size[0],0,0],[size[0],size[1],0],[0,size[1],0]]],
@@ -69,7 +69,7 @@ def draw_from_file(drawer, filename, fov):
       loc = map(float,arr[2][1:-1].split(","))
       color = arr[3]
       wireframe = int(arr[4])
-      
+
       print size
       print loc
       print color
@@ -88,7 +88,7 @@ def draw_from_file(drawer, filename, fov):
       loc = map(float,arr[2][1:-1].split(","))
       color = arr[3]
       wireframe = int(arr[4])
-      
+
       print size
       print loc
       print color
@@ -111,7 +111,7 @@ def draw_from_file(drawer, filename, fov):
 
   draw_polygons(drawer, polygons)
 
-#Okay we are going to generalize this function to work for prisms in general, and then cubes will be easily covered as well. 
+#Okay we are going to generalize this function to work for prisms in general, and then cubes will be easily covered as well.
 def draw_from_model(drawer, camera, model, fov):
     M = np.concatenate(
         (camera, np.array([[0, 0, 0, 1]]).T), axis=1

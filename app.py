@@ -46,7 +46,7 @@ def infer():
         )
         first_guess = problem.get_random_cube()
         guess = black.optimize(
-            img, first_guess, trials=100
+            img, first_guess, trials=500
         )
         problem.get_image(guess).save('./guess.png')
         obj = [

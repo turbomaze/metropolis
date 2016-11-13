@@ -35,9 +35,9 @@ class MH(object):
 
             x_list = list(x)
             x_list[k] += 0.1
-            x2 = tuple(x_list)
+            xpp = tuple(x_list)
 
-            post_xpp = pi(x2)
+            post_xpp = pi(xpp)
 
             factor = (1. - i*(0.5/trials)) * np.sign(
                 post_xpp - post_x

@@ -30,20 +30,21 @@ def render_particles(rt, dimensions, particles):
 def test001():
     dims = (400, 300)
     mins = [0, 0, 0, 3]
-    maxes = [20, 8, 12, 12]
+    maxes = [20, 12, 18, 8]
     root = Tk()
     root.geometry(str(dims[0]) + 'x' + str(dims[1]))
 
     # domain specific
 
     numBoxes = 2
-    correct = [15., 0., 10., 7] + [16, 4, 6, 3]
+    correct = [0., 0., 0., 5.] + [16., 0., 0., 5.]
     problem = CubeProblem(
         root, dims, numBoxes,
         mins*numBoxes, maxes*numBoxes,
         radius=20
     )
     correct_img = problem.get_image(correct)
+    print "save"
     correct_img.save('../data/correct.bmp')
     metropolis = MH(
         problem.get_next,
@@ -55,7 +56,7 @@ def test001():
     # execution
     first_guess = problem.get_random_cube()
     guess = metropolis.optimize(
-        correct_img, first_guess, trials=200
+        correct_img, first_guess, trials=400
     )
 
     im = problem.get_image(guess)
@@ -92,7 +93,7 @@ def test002():
     # execution
     first_guess = problem.get_random_cube()
     guess = metropolis.optimize(
-        correct_img, first_guess, trials=200
+        correct_img, first_guess, trials=300
     )
 
     im = problem.get_image(guess)

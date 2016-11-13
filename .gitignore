@@ -1,3 +1,7 @@
 *.pyc
 
 metropolis/*.pyc
+
+clean.png
+
+guess.png

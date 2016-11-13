@@ -156,8 +156,8 @@ class CubeProblem(object):
         model = [
             [20, (0, 0, 0), '#000000', 1]
         ] + [[
-            x[3*i+3],
-            (x[3*i], x[3*i+1], x[3*i+2]),
+            x[4*i+3],
+            (x[4*i], x[4*i+1], x[4*i+2]),
             '#ff0000',
             0
         ] for i in range(0, self.num_boxes)]
@@ -288,17 +288,15 @@ class PrismProblem(object):
         return im
 
     def get_random_cube(self):
-        retVal = [
-            random.uniform(self.mins[i], self.maxes[i]) for i in range(0, len(self.mins))
-        ]
-        print "Retval", retVal
+        retVal = [ random.uniform(self.mins[i],self.maxes[i]) for i in range(0, len(self.mins))]
+        print "Retval",retVal
         return retVal
 
 
     # G
     def get_next(self, x, k, factor):
-        step = (self.maxes[k]-self.mins[k])/6.
-        shift = random.normal(factor*step, factor*step)
+        step = (self.maxes[k]-self.mins[k])/4.
+        shift = factor * random.uniform(0, step)
 
         if x[k] + shift < self.mins[k] or x[k] + shift > self.maxes[k]:
             return x
